@@ -3,68 +3,78 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Listening Pedestal: Field Lab</title>
+<title>Listening Pedestal — Signal Garden v3</title>
 <style>
   :root{
-    --ink:#e6f0ed;
-    --muted:rgba(230,240,237,.61);
-    --hair:rgba(230,240,237,.12);
-    --pane:rgba(4,11,15,.72);
+    --ink:#edf7f3;
+    --muted:rgba(237,247,243,.62);
+    --faint:rgba(237,247,243,.12);
+    --pane:rgba(4,10,14,.74);
   }
   *{box-sizing:border-box}
-  html,body{width:100%;height:100%;margin:0;overflow:hidden;background:#010406;color:var(--ink);
+  html,body{width:100%;height:100%;margin:0;overflow:hidden;background:#010407;color:var(--ink);
     font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace}
   canvas{display:block;width:100%;height:100%;touch-action:none;cursor:crosshair}
-  .hud{position:fixed;inset:0;pointer-events:none;display:flex;flex-direction:column;justify-content:space-between;
-    padding:max(15px,env(safe-area-inset-top)) max(15px,env(safe-area-inset-right)) max(15px,env(safe-area-inset-bottom)) max(15px,env(safe-area-inset-left))}
-  .top{display:flex;align-items:flex-start;justify-content:space-between;gap:18px}
-  .brand{font-size:10px;line-height:1.55;letter-spacing:.15em;text-transform:uppercase}
-  .brand b{display:block;font-size:14px;letter-spacing:.13em;color:#fff;font-weight:650}
-  .readout{font-size:9px;line-height:1.6;letter-spacing:.1em;text-align:right;text-transform:uppercase;color:var(--muted)}
-  .readout b{font-size:11px;color:#fff;font-weight:600}
-  .notice{position:absolute;left:50%;top:46%;translate:-50% -50%;width:min(470px,82vw);padding:10px 13px;
-    border:1px solid rgba(255,255,255,.10);border-radius:12px;background:rgba(4,10,14,.56);backdrop-filter:blur(13px);
-    box-shadow:0 10px 60px rgba(0,0,0,.34);font-size:10px;line-height:1.6;letter-spacing:.04em;text-align:center;
-    color:rgba(238,248,244,0);opacity:0;pointer-events:none;transition:opacity .35s,color .35s}
-  .notice.show{opacity:1;color:rgba(238,248,244,.86)}
-  .bottom{align-self:center;pointer-events:auto;width:min(1080px,100%);display:flex;flex-direction:column;gap:8px}
-  .hint{pointer-events:none;text-align:center;font-size:9px;line-height:1.5;letter-spacing:.1em;text-transform:uppercase;color:rgba(230,240,237,.46)}
-  .hint b{color:rgba(230,240,237,.87);font-weight:500}
-  .panel,.patchbay{border:1px solid var(--hair);background:linear-gradient(125deg,rgba(9,18,23,.86),rgba(3,8,11,.58));
-    box-shadow:0 16px 70px rgba(0,0,0,.38),inset 0 1px 0 rgba(255,255,255,.035);backdrop-filter:blur(15px)}
-  .panel{border-radius:17px;padding:8px;display:flex;align-items:center;justify-content:center;gap:6px;flex-wrap:wrap}
-  .patchbay{border-radius:13px;padding:8px 10px;display:grid;grid-template-columns:auto repeat(4,minmax(120px,1fr)) auto;align-items:center;gap:7px}
-  .patch-title{font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:rgba(230,240,237,.6);white-space:nowrap}
-  .route{display:flex;align-items:center;gap:5px;font-size:9px;letter-spacing:.06em;text-transform:uppercase;color:rgba(230,240,237,.65);white-space:nowrap}
+  .hud{position:fixed;inset:0;pointer-events:none;padding:max(14px,env(safe-area-inset-top)) max(14px,env(safe-area-inset-right)) max(14px,env(safe-area-inset-bottom)) max(14px,env(safe-area-inset-left))}
+  .brand{position:absolute;left:16px;top:14px;font-size:9px;line-height:1.5;letter-spacing:.14em;text-transform:uppercase;pointer-events:none}
+  .brand b{display:block;font-size:13px;letter-spacing:.12em;color:#fff}
+  .status{position:absolute;right:16px;top:14px;text-align:right;font-size:9px;line-height:1.55;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+  .status b{color:#fff;font-size:11px;font-weight:600}
+  .deck{
+    position:absolute;left:15px;top:80px;width:272px;max-height:calc(100vh - 260px);overflow:auto;pointer-events:auto;
+    border:1px solid var(--faint);border-radius:14px;background:linear-gradient(135deg,rgba(8,18,23,.88),rgba(3,7,10,.64));
+    box-shadow:0 18px 70px rgba(0,0,0,.38),inset 0 1px 0 rgba(255,255,255,.035);backdrop-filter:blur(16px);
+    transition:transform .25s ease,opacity .25s ease;
+  }
+  .deck.collapsed{transform:translateX(-288px);opacity:.25}
+  .deckHead{display:flex;align-items:center;justify-content:space-between;padding:11px 10px 8px;border-bottom:1px solid rgba(255,255,255,.07)}
+  .deckTitle{font-size:10px;letter-spacing:.13em;text-transform:uppercase}
+  .smallBtn{appearance:none;border:1px solid rgba(255,255,255,.15);border-radius:8px;background:rgba(255,255,255,.035);color:var(--ink);
+    padding:5px 7px;font:inherit;font-size:9px;cursor:pointer}
+  .section{padding:9px 10px;border-bottom:1px solid rgba(255,255,255,.055)}
+  .section:last-child{border-bottom:0}
+  .sectionLabel{font-size:8px;color:rgba(237,247,243,.55);letter-spacing:.12em;text-transform:uppercase;margin-bottom:7px}
+  .layers{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+  button{appearance:none;border:1px solid rgba(255,255,255,.13);border-radius:9px;background:rgba(255,255,255,.035);color:var(--ink);
+    padding:8px 8px;font:inherit;font-size:8px;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;
+    transition:background .15s,border-color .15s,transform .15s}
+  button:hover{background:rgba(255,255,255,.11);border-color:rgba(255,255,255,.34);transform:translateY(-1px)}
+  button.active{background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.46)}
+  button.live{border-color:rgba(255,255,255,.70);box-shadow:0 0 18px rgba(255,255,255,.13)}
+  .route{display:grid;grid-template-columns:82px 1fr;gap:6px;align-items:center;margin:5px 0;font-size:8px;color:rgba(237,247,243,.64);letter-spacing:.07em;text-transform:uppercase}
   select,input[type=range]{pointer-events:auto}
-  select{appearance:none;border:1px solid rgba(255,255,255,.13);border-radius:8px;padding:7px 22px 7px 8px;background:rgba(255,255,255,.045);
-    color:#eef8f5;font:inherit;font-size:9px;letter-spacing:.05em;cursor:pointer;background-image:linear-gradient(45deg,transparent 50%,#dce8e3 50%),linear-gradient(135deg,#dce8e3 50%,transparent 50%);
-    background-position:calc(100% - 11px) 10px,calc(100% - 7px) 10px;background-size:4px 4px,4px 4px;background-repeat:no-repeat}
+  select{width:100%;appearance:none;border:1px solid rgba(255,255,255,.12);border-radius:7px;padding:6px 20px 6px 7px;background:rgba(255,255,255,.045);
+    color:#f2fbf8;font:inherit;font-size:8px;letter-spacing:.05em;cursor:pointer;
+    background-image:linear-gradient(45deg,transparent 50%,#dce9e5 50%),linear-gradient(135deg,#dce9e5 50%,transparent 50%);
+    background-position:calc(100% - 10px) 9px,calc(100% - 6px) 9px;background-size:4px 4px,4px 4px;background-repeat:no-repeat}
   option{background:#10191d;color:#fff}
-  button{appearance:none;border:1px solid rgba(255,255,255,.13);border-radius:10px;padding:9px 10px;background:rgba(255,255,255,.035);
-    color:var(--ink);font:inherit;font-size:9px;letter-spacing:.085em;text-transform:uppercase;cursor:pointer;transition:transform .15s,background .15s,border-color .15s}
-  button:hover{background:rgba(255,255,255,.10);border-color:rgba(255,255,255,.35);transform:translateY(-1px)}
-  button.active{background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.47)}
-  button.live{border-color:rgba(255,255,255,.72);box-shadow:0 0 20px rgba(255,255,255,.12);background:rgba(255,255,255,.13)}
-  button.mutate{background:rgba(255,255,255,.10)}
-  .slider{display:flex;align-items:center;gap:6px;padding-left:3px;color:rgba(230,240,237,.58);font-size:9px;letter-spacing:.07em;text-transform:uppercase;white-space:nowrap}
-  input[type=range]{accent-color:#f2fcf8;width:74px}
-  details{border:1px solid rgba(230,240,237,.07);border-radius:12px;padding:7px 12px;background:rgba(2,7,10,.40);font-size:9px;line-height:1.6;color:var(--muted)}
-  summary{cursor:pointer;color:rgba(230,240,237,.76);letter-spacing:.08em;text-transform:uppercase}
-  details p{margin:8px 0 1px}
+  .rangeRow{display:flex;align-items:center;justify-content:space-between;gap:8px;color:rgba(237,247,243,.64);font-size:8px;letter-spacing:.07em;text-transform:uppercase}
+  input[type=range]{accent-color:#f3fffa;width:132px}
+  .bottom{
+    position:absolute;left:50%;bottom:14px;translate:-50% 0;width:min(940px,calc(100vw - 28px));pointer-events:auto;display:flex;flex-direction:column;gap:7px
+  }
+  .hint{pointer-events:none;text-align:center;color:rgba(237,247,243,.48);font-size:8px;line-height:1.5;letter-spacing:.1em;text-transform:uppercase}
+  .hint b{color:rgba(237,247,243,.86);font-weight:500}
+  .controls{border:1px solid var(--faint);border-radius:15px;padding:8px;display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:6px;
+    background:linear-gradient(125deg,rgba(8,17,22,.84),rgba(3,7,10,.58));box-shadow:0 16px 70px rgba(0,0,0,.34),inset 0 1px 0 rgba(255,255,255,.035);backdrop-filter:blur(15px)}
+  .controls .mutate{background:rgba(255,255,255,.11)}
+  .notice{
+    position:absolute;left:50%;top:45%;translate:-50% -50%;width:min(440px,78vw);padding:10px 13px;border:1px solid rgba(255,255,255,.10);
+    border-radius:12px;background:rgba(3,8,12,.67);box-shadow:0 12px 55px rgba(0,0,0,.35);backdrop-filter:blur(14px);
+    text-align:center;font-size:10px;line-height:1.55;letter-spacing:.04em;color:rgba(238,248,244,0);opacity:0;pointer-events:none;transition:opacity .32s,color .32s
+  }
+  .notice.show{opacity:1;color:rgba(238,248,244,.9)}
+  details{position:absolute;right:16px;bottom:97px;width:min(370px,calc(100vw - 32px));pointer-events:auto;padding:7px 10px;
+    border:1px solid rgba(255,255,255,.07);border-radius:10px;background:rgba(3,8,11,.48);backdrop-filter:blur(10px);color:var(--muted);font-size:8px;line-height:1.55}
+  summary{cursor:pointer;color:rgba(237,247,243,.76);letter-spacing:.08em;text-transform:uppercase}
+  details p{margin:7px 0 1px}
   code{font-family:inherit;color:#fff}
   input[type=file]{display:none}
-  @media(max-width:900px){
-    .patchbay{grid-template-columns:repeat(2,1fr)}
-    .patch-title{grid-column:1/-1}
-    .slider{grid-column:1/-1;justify-content:center;padding-top:2px}
-  }
-  @media(max-width:570px){
-    .hud{padding:11px}.readout{display:none}.brand{font-size:8px}.brand b{font-size:12px}
-    .panel{border-radius:14px;padding:7px;gap:5px}.panel button{padding:8px 8px;font-size:8px}
-    .panel .scene{flex:1 1 29%}.panel .audio{flex:1 1 42%}.panel .mutate{flex:1 1 42%}
-    .patchbay{gap:5px;padding:7px}.route{justify-content:space-between}.hint{font-size:8px}
-    select{font-size:8px;padding:6px 18px 6px 6px}
+  @media(max-width:760px){
+    .deck{top:61px;width:250px;max-height:calc(100vh - 200px)}
+    .brand{left:12px;top:10px}.status{right:12px;top:10px}.brand b{font-size:11px}
+    details{display:none}.bottom{bottom:10px}.controls{gap:5px;padding:7px;border-radius:13px}
+    .controls button{font-size:7px;padding:7px 7px}.controls .audio{flex:1 1 31%}.controls .mutate{flex:1 1 35%}
   }
 </style>
 </head>
@@ -72,41 +82,73 @@
 <canvas id="stage"></canvas>
 
 <div class="hud">
-  <div class="top">
-    <div class="brand"><b>Listening Pedestal: Field Lab</b>spectral matter engine / specimen <span id="seed">000000</span></div>
-    <div class="readout"><b id="sceneLabel">Fluid Field</b><br><span id="audioLabel">autonomous field</span><br><span id="paletteLabel">lunar brine</span></div>
-  </div>
+  <div class="brand"><b>Listening Pedestal: Signal Garden</b>gravitational glyph ecology / seed <span id="seed">000000</span></div>
+  <div class="status"><b id="paletteReadout">Prism</b><br><span id="signalReadout">autonomous field</span></div>
+
+  <aside id="deck" class="deck">
+    <div class="deckHead">
+      <span class="deckTitle">Layer Deck</span>
+      <button id="collapseDeck" class="smallBtn">Hide</button>
+    </div>
+
+    <div class="section">
+      <div class="sectionLabel">Visual layers</div>
+      <div class="layers">
+        <button class="layer active" data-layer="bodies">Bodies</button>
+        <button class="layer active" data-layer="bridges">Bridges</button>
+        <button class="layer" data-layer="field">Soft membrane</button>
+        <button class="layer active" data-layer="splines">Ink splines</button>
+        <button class="layer active" data-layer="mirror">Mirror ink</button>
+        <button class="layer active" data-layer="particles">Particles</button>
+        <button class="layer active" data-layer="symbols">Unicode debris</button>
+        <button class="layer" data-layer="life">Conway life</button>
+        <button class="layer active" data-layer="eq">EQ trace</button>
+        <button class="layer" data-layer="grid">Coordinate grid</button>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="sectionLabel">Palette / profile</div>
+      <label class="route"><span>Color profile</span><select id="paletteSelect"></select></label>
+      <div class="rangeRow"><span>Intensity</span><input id="intensity" type="range" min="0.20" max="2.20" step="0.05" value="1.00"></div>
+    </div>
+
+    <div class="section">
+      <div class="sectionLabel">Frequency patch matrix</div>
+      <label class="route"><span>Mass</span><select id="routeMass"></select></label>
+      <label class="route"><span>Gravity</span><select id="routeGravity"></select></label>
+      <label class="route"><span>Deform</span><select id="routeDeform"></select></label>
+      <label class="route"><span>Hue</span><select id="routeHue"></select></label>
+      <label class="route"><span>Particles</span><select id="routeParticles"></select></label>
+      <label class="route"><span>Symbols</span><select id="routeSymbols"></select></label>
+      <label class="route"><span>Life</span><select id="routeLife"></select></label>
+      <label class="route"><span>Splines</span><select id="routeSplines"></select></label>
+    </div>
+
+    <div class="section">
+      <div class="sectionLabel">Matter settings</div>
+      <div class="rangeRow"><span>Body count</span><input id="bodyCount" type="range" min="5" max="22" step="1" value="12"></div>
+      <div class="rangeRow"><span>Response</span><input id="response" type="range" min="0.20" max="3.00" step="0.05" value="1.10"></div>
+    </div>
+  </aside>
 
   <div id="notice" class="notice"></div>
 
-  <div class="bottom">
-    <div class="hint">Move pointer to <b>stir</b> · drag to <b>pull matter</b> · <b>1–3</b> scenes · <b>M</b> mutates · <b>space</b> pulses</div>
+  <details>
+    <summary>Spotify/tab capture</summary>
+    <p><b>Listen to Tab</b> opens Chrome’s picker. Select the Spotify browser tab and turn on <b>Share tab audio</b>. The Patch Matrix maps independently measured <code>SUB / BASS / LOW-MID / MID / HIGH-MID / AIR</code> energy to specific visual forces. For tab and mic capture, GitHub Pages or <code>localhost</code> is more reliable than <code>file://</code>.</p>
+  </details>
 
-    <div class="panel">
-      <button class="scene active" data-scene="fluid">1 Fluid Field</button>
-      <button class="scene" data-scene="tiles">2 Spectral Tiles</button>
-      <button class="scene" data-scene="organism">3 Organism</button>
-      <button id="mutate" class="mutate">M Mutate Matter</button>
+  <div class="bottom">
+    <div class="hint">Move pointer to <b>stir</b> · hold to <b>attract</b> · <b>M</b> mutate · <b>space</b> injects energy · layer controls at left</div>
+    <div class="controls">
+      <button id="mutate" class="mutate">M Mutate Garden</button>
       <button id="tabAudio" class="audio">Listen to Tab</button>
       <button id="micAudio" class="audio">Use Microphone</button>
       <button id="fileAudio" class="audio">Play Audio File</button>
       <button id="stopAudio" class="audio">Stop Audio</button>
       <input id="audioFile" type="file" accept="audio/*">
     </div>
-
-    <div class="patchbay">
-      <span class="patch-title">Patch Matrix</span>
-      <label class="route">Mass ← <select id="massRoute"></select></label>
-      <label class="route">Flow ← <select id="flowRoute"></select></label>
-      <label class="route">Hue ← <select id="hueRoute"></select></label>
-      <label class="route">Geometry ← <select id="geometryRoute"></select></label>
-      <label class="slider">Response <input id="response" type="range" min="0.25" max="3.00" step="0.05" value="1.25"></label>
-    </div>
-
-    <details>
-      <summary>Audio routing notes / Spotify tab capture</summary>
-      <p><b>Listen to Tab</b> opens the browser’s share picker. Choose the Spotify Web Player browser tab and enable <b>Share tab audio</b>. The six-band analyser separates sub, bass, low-mid, mid, high-mid, and air energy; the Patch Matrix lets you assign any of those bands to mass, flow, color, and geometry. For tab/mic capture, use GitHub Pages or <code>localhost</code>; local audio files work directly.</p>
-    </details>
   </div>
 </div>
 
@@ -115,600 +157,456 @@
 "use strict";
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   LISTENING PEDESTAL: FIELD LAB
-   - 2D metaball/implicit-field renderer: blobs truly merge by threshold.
-   - Fluid-like tracer ecology: advection by curl / blob vector fields.
-   - Full FFT-derived six-band spectral analysis, not a raw volume pulse.
-   - Patch Matrix: any frequency band can drive mass, flow, hue, geometry.
-   - No libraries, no build step, one HTML file.
+   SIGNAL GARDEN v3
+   The center is intentionally NOT a giant blob bloom:
+   - geometric "cells" have their own faceted silhouette
+   - bodies gravitate and only deform toward nearby neighbors
+   - connection bridges are structural ligaments, not unlimited soft field
+   - metaball membrane is optional and narrow by default
+   - each layer can be toggled independently
 ═══════════════════════════════════════════════════════════════════════════ */
 
 const canvas = document.getElementById("stage");
-const ctx = canvas.getContext("2d", {alpha:false});
+const ctx = canvas.getContext("2d",{alpha:false});
 const $ = id => document.getElementById(id);
-const seedText = $("seed"), sceneLabel = $("sceneLabel"), audioLabel = $("audioLabel"), paletteLabel = $("paletteLabel");
-const notice = $("notice");
+const seedText=$("seed"), paletteReadout=$("paletteReadout"), signalReadout=$("signalReadout"), notice=$("notice");
 
-let W=0,H=0,DPR=1,scene="fluid",seed=(Math.random()*0xffffffff)>>>0;
-let last=performance.now(),simTime=0,frame=0,sceneData=null;
-let pointer={x:.5,y:.5,px:.5,py:.5,down:false,active:false,force:0};
-let pulse=0, noticeTimer=0, response=1.25;
-let trailCanvas=document.createElement("canvas"),trailCtx=trailCanvas.getContext("2d",{alpha:true});
+let W=0,H=0,DPR=1,last=performance.now(),t=0,seed=(Math.random()*0xffffffff)>>>0;
+let intensity=1.0,response=1.10,bodyCount=12,pulse=0,noticeTimer=0;
 let fieldCanvas=document.createElement("canvas"),fieldCtx=fieldCanvas.getContext("2d",{alpha:true});
-let fieldImage=null,fieldW=0,fieldH=0;
-let eqHistory=Array.from({length:70},()=>0);
+let fieldImage=null,fieldW=0,fieldH=0,trailCanvas=document.createElement("canvas"),trailCtx=trailCanvas.getContext("2d",{alpha:true});
+let garden=null,life=null,lifeTimer=0,history=Array.from({length:92},()=>0);
+let pointer={x:.5,y:.5,down:false,active:false};
+let deckCollapsed=false;
 
+const layers={bodies:true,bridges:true,field:false,splines:true,mirror:true,particles:true,symbols:true,life:false,eq:true,grid:false};
 const bandNames=["sub","bass","lowMid","mid","highMid","air"];
 const bandLabels={sub:"SUB",bass:"BASS",lowMid:"LOW-MID",mid:"MID",highMid:"HIGH-MID",air:"AIR"};
-const bands={sub:.03,bass:.05,lowMid:.03,mid:.04,highMid:.03,air:.02};
+const bands={sub:.03,bass:.04,lowMid:.03,mid:.04,highMid:.03,air:.02};
 const rawBands={...bands};
-const routes={mass:"bass",flow:"lowMid",hue:"mid",geometry:"highMid"};
-let audioCtx=null,analyser=null,freqData=null,activeStream=null,mediaEl=null,mediaNode=null,audioSource="autonomous";
+const routes={mass:"bass",gravity:"sub",deform:"lowMid",hue:"highMid",particles:"mid",symbols:"air",life:"bass",splines:"highMid"};
 
-const palettes=[
-  {name:"lunar brine",base:[105,238,211],accent:[211,251,255],deep:[4,30,37],shadow:[1,8,12]},
-  {name:"amber fossil",base:[255,164,71],accent:[255,236,178],deep:[49,13,4],shadow:[13,3,1]},
-  {name:"violet instrument",base:[177,128,255],accent:[245,210,255],deep:[23,7,49],shadow:[5,1,13]},
-  {name:"toxic reliquary",base:[179,255,86],accent:[239,255,201],deep:[14,39,6],shadow:[2,10,2]},
-  {name:"coral protocol",base:[255,101,149],accent:[255,216,229],deep:[50,6,20],shadow:[13,1,5]},
-  {name:"cobalt organ",base:[67,164,255],accent:[196,232,255],deep:[4,17,50],shadow:[1,5,14]},
-  {name:"sulfur dusk",base:[238,228,78],accent:[255,248,192],deep:[45,37,4],shadow:[10,8,1]}
+const palettes={
+  prism:{name:"Prism",kind:"rainbow",base:[91,215,255],accent:[255,116,223],deep:[4,16,33],shadow:[1,3,10]},
+  aurora:{name:"Aurora",kind:"fixed",base:[65,242,201],accent:[143,129,255],deep:[3,34,35],shadow:[1,7,12]},
+  acid:{name:"Acid",kind:"fixed",base:[204,255,69],accent:[47,231,255],deep:[22,45,4],shadow:[3,9,2]},
+  ember:{name:"Ember",kind:"fixed",base:[255,89,65],accent:[255,209,66],deep:[53,6,3],shadow:[12,1,1]},
+  candy:{name:"Candy",kind:"fixed",base:[255,91,186],accent:[149,224,255],deep:[40,3,27],shadow:[9,1,7]},
+  radio:{name:"Radio",kind:"mono",base:[148,255,115],accent:[225,255,191],deep:[8,36,9],shadow:[1,8,2]},
+  mono:{name:"Monochrome",kind:"mono",base:[210,225,224],accent:[255,255,255],deep:[13,18,21],shadow:[2,3,4]}
+};
+let paletteKey="prism",palette=palettes[paletteKey];
+
+const glyphs=[
+  "◌","◍","◎","◉","◈","◇","◆","△","▽","◐","◑","☍","☌","☿","♆","♄","✶","✷","✹","✺","✦","✧","⊹","⟡","⨳",
+  "⌁","⌂","⌘","⌬","⧖","⧗","⧉","⫷","⫸","∿","≋","∞","∴","∵","≜","≝","≈","≋","⊙","⊚","⊛","☯","☊","☋",
+  "♢","♧","♤","♡","♜","♞","⚚","⚘","⚛","⚝","⚭","⚯","⟁","⧚","⧜","⩕","⩗","⩘","╳","╬","╱","╲","▧","▨"
 ];
-let palette=palettes[0];
 
-const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
-const lerp=(a,b,t)=>a+(b-a)*t;
-const mix=(a,b,t)=>[lerp(a[0],b[0],t),lerp(a[1],b[1],t),lerp(a[2],b[2],t)];
-const rgb=(c,a=1)=>`rgba(${c.map(v=>Math.round(v)).join(",")},${a})`;
-const hypot=(x,y)=>Math.hypot(x,y);
-function rngFactory(s){return()=>{let t=s+=0x6D2B79F5;t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return((t^t>>>14)>>>0)/4294967296;};}
-function hueRotate(color,amt){
-  // An inexpensive RGB flavor shift that does not need a giant color-space conversion.
-  return [
-    clamp(color[0]+amt*33-color[2]*amt*.06,0,255),
-    clamp(color[1]+amt*6+color[0]*amt*.03,0,255),
-    clamp(color[2]-amt*20+color[1]*amt*.04,0,255)
-  ];
+function clamp(v,a,b){return Math.max(a,Math.min(b,v));}
+function lerp(a,b,u){return a+(b-a)*u;}
+function mix(a,b,u){return [lerp(a[0],b[0],u),lerp(a[1],b[1],u),lerp(a[2],b[2],u)];}
+function rgb(c,a=1){return `rgba(${c.map(x=>Math.round(clamp(x,0,255))).join(",")},${a})`;}
+function hslRgb(h,s,l){
+  h=((h%1)+1)%1;s=clamp(s,0,1);l=clamp(l,0,1);
+  const c=(1-Math.abs(2*l-1))*s,x=c*(1-Math.abs((h*6)%2-1)),m=l-c/2;
+  let r=0,g=0,b=0;
+  if(h<1/6)[r,g,b]=[c,x,0];else if(h<2/6)[r,g,b]=[x,c,0];else if(h<3/6)[r,g,b]=[0,c,x];
+  else if(h<4/6)[r,g,b]=[0,x,c];else if(h<5/6)[r,g,b]=[x,0,c];else[r,g,b]=[c,0,x];
+  return [(r+m)*255,(g+m)*255,(b+m)*255];
 }
-function showNotice(text,ms=3600){
-  notice.textContent=text;notice.classList.add("show");clearTimeout(noticeTimer);
-  noticeTimer=setTimeout(()=>notice.classList.remove("show"),ms);
+function rngFactory(s){return()=>{let x=s+=0x6D2B79F5;x=Math.imul(x^x>>>15,x|1);x^=x+Math.imul(x^x>>>7,x|61);return((x^x>>>14)>>>0)/4294967296;};}
+function angleDiff(a,b){return Math.atan2(Math.sin(a-b),Math.cos(a-b));}
+function showNotice(text,ms=3200){notice.textContent=text;notice.classList.add("show");clearTimeout(noticeTimer);noticeTimer=setTimeout(()=>notice.classList.remove("show"),ms);}
+function control(name){return clamp(bands[routes[name]]*response,0,2.4);}
+function bodyColor(node,variant=0){
+  const hue=control("hue");
+  if(palette.kind==="rainbow"){
+    return hslRgb(node.hue+t*.012+hue*.10+variant*.04,.80,.50+Math.sin(node.phase+t*.7)*.10);
+  }
+  if(palette.kind==="mono")return mix(palette.base,palette.accent,.20+.48*node.tone+variant*.12);
+  return mix(palette.base,palette.accent,clamp(node.tone+.18*Math.sin(t*.6+node.phase)+hue*.14+variant*.08,0,1));
 }
-function mapped(name){return clamp(bands[routes[name]]*response,0,2.2);}
+function resize(){W=innerWidth;H=innerHeight;DPR=Math.min(devicePixelRatio||1,2);canvas.width=Math.floor(W*DPR);canvas.height=Math.floor(H*DPR);canvas.style.width=W+"px";canvas.style.height=H+"px";ctx.setTransform(DPR,0,0,DPR,0,0);trailCanvas.width=Math.max(1,Math.floor(W*.72));trailCanvas.height=Math.max(1,Math.floor(H*.72));trailCtx.clearRect(0,0,trailCanvas.width,trailCanvas.height);fieldW=clamp(Math.floor(Math.sqrt(W*H)/5.5),150,240);fieldH=Math.max(80,Math.floor(fieldW*H/W));fieldCanvas.width=fieldW;fieldCanvas.height=fieldH;fieldImage=fieldCtx.createImageData(fieldW,fieldH);}
+window.addEventListener("resize",resize);
 
-/* ───────────────────────────── Scene manufacture ─────────────────────────── */
+/* ─────────────────────── Garden population / life lattice ────────────────── */
 
-function makeBlob(rng,i,n){
-  const a=i/n*Math.PI*2+(rng()-.5)*.65;
-  const r=.055+rng()*.245;
+function createNode(rng,i,n){
+  const a=i/n*Math.PI*2+(rng()-.5)*.55,rad=.06+rng()*.22;
+  const vcount=10+Math.floor(rng()*8);
+  const wiggle=Array.from({length:vcount},()=>.88+rng()*.25);
   return {
-    x:.5+Math.cos(a)*r,y:.5+Math.sin(a)*r*.65,
-    vx:(rng()-.5)*.02,vy:(rng()-.5)*.02,
-    radius:.045+rng()*.080,
-    rest:.045+rng()*.080,
-    phase:rng()*Math.PI*2,rate:.45+rng()*1.6,
-    color:mix(palette.base,palette.accent,rng()*.68),
-    flavor:(rng()-.5)*1.9,texture:rng()
+    x:.5+Math.cos(a)*rad,y:.50+Math.sin(a)*rad*.62,
+    vx:(rng()-.5)*.005,vy:(rng()-.5)*.005,
+    r:.030+rng()*.035,baseR:.030+rng()*.035,phase:rng()*Math.PI*2,rate:.45+rng()*1.25,
+    hue:rng(),tone:rng(),vcount,wiggle,spin:(rng()-.5)*.8,texture:rng(),neighbors:[]
   };
 }
-function makeParticle(rng){
-  return {x:rng(),y:rng(),px:0,py:0,vx:(rng()-.5)*.003,vy:(rng()-.5)*.003,
-    life:rng(),age:rng()*2.5,seed:rng(),size:.25+rng()*1.8,ink:rng()};
+function createLife(rng){
+  const cols=88,rows=52,current=new Uint8Array(cols*rows),next=new Uint8Array(cols*rows);
+  for(let y=0;y<rows;y++)for(let x=0;x<cols;x++){
+    const dx=x/cols-.5,dy=y/rows-.5;
+    if(Math.hypot(dx,dy)<.42 && rng()<.12)current[y*cols+x]=1;
+  }
+  return {cols,rows,current,next,rng};
 }
-function buildScene(newSeed){
-  seed=newSeed>>>0;
-  seedText.textContent=String(seed).padStart(9,"0").slice(-6);
+function makeGarden(newSeed){
+  seed=newSeed>>>0;seedText.textContent=String(seed).padStart(9,"0").slice(-6);
   const rng=rngFactory(seed);
-  palette=palettes[Math.floor(rng()*palettes.length)];
-  paletteLabel.textContent=palette.name;
-
-  const count=9+Math.floor(rng()*11);
-  const blobs=Array.from({length:count},(_,i)=>makeBlob(rng,i,count));
-  const particles=Array.from({length:850+Math.floor(rng()*650)},()=>makeParticle(rng));
-  const motes=Array.from({length:250},()=>({x:rng(),y:rng(),z:rng(),phase:rng()*6.28,size:.3+rng()*1.8}));
-  const tiles=Array.from({length:64},(_,i)=>({
-    a:i/64*Math.PI*2,phase:rng()*6.28,rad:.13+rng()*.46,len:.08+rng()*.28,w:.006+rng()*.026,rate:.35+rng()*1.4,flavor:(rng()-.5)*2
+  const nodes=Array.from({length:bodyCount},(_,i)=>createNode(rng,i,bodyCount));
+  // Put node base radius after creating it, rather than a second random value.
+  nodes.forEach(n=>n.baseR=n.r);
+  const particles=Array.from({length:1100},()=>({
+    x:rng(),y:rng(),px:rng(),py:rng(),vx:(rng()-.5)*.001,vy:(rng()-.5)*.001,
+    age:rng()*6,life:2+rng()*7,flavor:rng(),size:.25+rng()*1.5
   }));
-  const tendrils=Array.from({length:12+Math.floor(rng()*8)},(_,i)=>({phase:rng()*6.28,rad:.13+rng()*.23,amp:.06+rng()*.16,rate:.35+rng()*1.1,offset:(rng()-.5)*.35}));
-  sceneData={blobs,particles,motes,tiles,tendrils,rng};
-  resetTrails();
-}
-function resetTrails(){
-  trailCanvas.width=Math.max(1,Math.floor(W*.72));
-  trailCanvas.height=Math.max(1,Math.floor(H*.72));
+  const symbols=Array.from({length:520},(_,i)=>({
+    x:rng(),y:rng(),vx:(rng()-.5)*.0006,vy:(rng()-.5)*.0006,phase:rng()*6.28,
+    glyph:glyphs[Math.floor(rng()*glyphs.length)],size:8+rng()*20,flavor:rng(),age:rng()*8
+  }));
+  const splines=Array.from({length:11},(_,i)=>({phase:rng()*6.28,amp:.05+rng()*.14,rate:.25+rng()*1.15,offset:(rng()-.5)*.34,weight:.4+rng()*1.2}));
+  garden={nodes,particles,symbols,splines,rng};
+  life=createLife(rng);
   trailCtx.clearRect(0,0,trailCanvas.width,trailCanvas.height);
 }
-function updateFieldResolution(){
-  // A deliberately low-resolution field gives metaballs an organic liquid edge
-  // while staying cheap enough to animate alongside the tracer simulation.
-  const area=W*H;
-  const target=Math.sqrt(area)/4.5;
-  fieldW=clamp(Math.floor(target),150,290);
-  fieldH=Math.max(90,Math.floor(fieldW*H/W));
-  fieldCanvas.width=fieldW;fieldCanvas.height=fieldH;
-  fieldImage=fieldCtx.createImageData(fieldW,fieldH);
+function updateLife(){
+  const L=life,{cols,rows,current,next}=L;
+  for(let y=0;y<rows;y++)for(let x=0;x<cols;x++){
+    let count=0;
+    for(let oy=-1;oy<=1;oy++)for(let ox=-1;ox<=1;ox++)if(ox||oy){const xx=(x+ox+cols)%cols,yy=(y+oy+rows)%rows;count+=current[yy*cols+xx];}
+    const i=y*cols+x;next[i]=(count===3||(current[i]&&count===2))?1:0;
+  }
+  L.current.set(next);next.fill(0);
+  // Frequency spikes seed fresh living cells, preventing eventual stillness.
+  if(control("life")>.34){
+    const inject=Math.floor(control("life")*7);
+    for(let i=0;i<inject;i++){
+      const x=Math.floor((.5+(Math.random()-.5)*.58)*cols),y=Math.floor((.5+(Math.random()-.5)*.48)*rows);
+      current[clamp(y,0,rows-1)*cols+clamp(x,0,cols-1)]=1;
+    }
+  }
 }
 
-/* ─────────────────── Spectral analyser / audio source plumbing ─────────── */
+/* ─────────────────────────── Spectrum / audio routes ─────────────────────── */
 
-function hzIndex(hz){
-  if(!analyser||!audioCtx)return 0;
-  return clamp(Math.round(hz/(audioCtx.sampleRate/2)*analyser.frequencyBinCount),0,analyser.frequencyBinCount-1);
-}
-function averageRange(fromHz,toHz){
-  const a=hzIndex(fromHz),b=Math.max(a+1,hzIndex(toHz));
-  let sum=0,n=0;
-  for(let i=a;i<=b;i++){sum+=freqData[i];n++;}
-  return n?sum/n/255:0;
-}
+let audioCtx=null,analyser=null,freqData=null,activeStream=null,mediaEl=null,mediaNode=null,audioSource="autonomous";
+function hzIndex(hz){return !analyser||!audioCtx?0:clamp(Math.round(hz/(audioCtx.sampleRate/2)*analyser.frequencyBinCount),0,analyser.frequencyBinCount-1);}
+function avgHz(a,b){const i0=hzIndex(a),i1=Math.max(i0+1,hzIndex(b));let sum=0,n=0;for(let i=i0;i<=i1;i++){sum+=freqData[i];n++;}return n?sum/n/255:0;}
 function updateAudio(){
   if(analyser){
     analyser.getByteFrequencyData(freqData);
-    rawBands.sub=averageRange(20,60);
-    rawBands.bass=averageRange(60,250);
-    rawBands.lowMid=averageRange(250,500);
-    rawBands.mid=averageRange(500,2000);
-    rawBands.highMid=averageRange(2000,6000);
-    rawBands.air=averageRange(6000,14500);
+    rawBands.sub=avgHz(20,60);rawBands.bass=avgHz(60,250);rawBands.lowMid=avgHz(250,500);rawBands.mid=avgHz(500,2000);rawBands.highMid=avgHz(2000,6000);rawBands.air=avgHz(6000,14500);
   }else{
-    // A small autonomous pulse means the artifact still has metabolism in silence.
-    rawBands.sub=.03+.025*(.5+.5*Math.sin(simTime*.69));
-    rawBands.bass=.045+.033*(.5+.5*Math.sin(simTime*.93+1.4));
-    rawBands.lowMid=.035+.025*(.5+.5*Math.sin(simTime*.67+2.2));
-    rawBands.mid=.04+.03*(.5+.5*Math.sin(simTime*1.17+.8));
-    rawBands.highMid=.025+.022*(.5+.5*Math.sin(simTime*1.8+2.6));
-    rawBands.air=.02+.018*(.5+.5*Math.sin(simTime*2.4+3.2));
+    rawBands.sub=.025+.030*(.5+.5*Math.sin(t*.62));
+    rawBands.bass=.035+.040*(.5+.5*Math.sin(t*.91+1.1));
+    rawBands.lowMid=.025+.030*(.5+.5*Math.sin(t*.74+2.3));
+    rawBands.mid=.030+.035*(.5+.5*Math.sin(t*1.13+.7));
+    rawBands.highMid=.020+.026*(.5+.5*Math.sin(t*1.73+2.4));
+    rawBands.air=.018+.022*(.5+.5*Math.sin(t*2.33+3.1));
   }
-  // Independent smoothing: sharp enough to catch percussion, calm enough to read.
-  for(const k of bandNames)bands[k]=lerp(bands[k],rawBands[k],k==="sub"?.15:.20);
-  eqHistory.push((bands.sub+bands.bass+bands.lowMid+bands.mid+bands.highMid+bands.air)/6);
-  if(eqHistory.length>70)eqHistory.shift();
+  for(const k of bandNames)bands[k]=lerp(bands[k],rawBands[k],k==="sub"?.13:.19);
+  history.push((bands.sub+bands.bass+bands.lowMid+bands.mid+bands.highMid+bands.air)/6);if(history.length>92)history.shift();
 }
 async function ensureAudio(){
   if(!audioCtx)audioCtx=new (window.AudioContext||window.webkitAudioContext)();
   if(audioCtx.state==="suspended")await audioCtx.resume();
-  if(!analyser){
-    analyser=audioCtx.createAnalyser();
-    analyser.fftSize=2048;
-    analyser.smoothingTimeConstant=.54;
-    freqData=new Uint8Array(analyser.frequencyBinCount);
-  }
+  if(!analyser){analyser=audioCtx.createAnalyser();analyser.fftSize=2048;analyser.smoothingTimeConstant=.52;freqData=new Uint8Array(analyser.frequencyBinCount);}
 }
-function syncAudioButtons(){
-  document.querySelectorAll(".audio").forEach(b=>b.classList.remove("live"));
-  if(audioSource==="tab")$("tabAudio").classList.add("live");
-  if(audioSource==="microphone")$("micAudio").classList.add("live");
-  if(audioSource==="file")$("fileAudio").classList.add("live");
-}
+function syncAudio(){document.querySelectorAll(".audio").forEach(b=>b.classList.remove("live"));if(audioSource==="tab")$("tabAudio").classList.add("live");if(audioSource==="microphone")$("micAudio").classList.add("live");if(audioSource==="file")$("fileAudio").classList.add("live");}
 function stopAudio(){
-  if(activeStream){activeStream.getTracks().forEach(t=>t.stop());activeStream=null;}
-  if(mediaEl){mediaEl.pause();URL.revokeObjectURL(mediaEl.src);mediaEl.src="";mediaEl=null;mediaNode=null;}
-  analyser=null;freqData=null;audioSource="autonomous";audioLabel.textContent="autonomous field";syncAudioButtons();
-  showNotice("Input disconnected. The field is dreaming by itself again.",1800);
+  if(activeStream){activeStream.getTracks().forEach(track=>track.stop());activeStream=null;}
+  if(mediaEl){mediaEl.pause();try{URL.revokeObjectURL(mediaEl.src);}catch(_){}mediaEl.src="";mediaEl=null;mediaNode=null;}
+  analyser=null;freqData=null;audioSource="autonomous";signalReadout.textContent="autonomous field";syncAudio();showNotice("External signal disconnected. Garden returned to self-oscillation.",2000);
 }
 async function attachStream(stream,label){
   stopAudio();await ensureAudio();
-  if(!stream.getAudioTracks().length){
-    stream.getTracks().forEach(t=>t.stop());
-    throw new Error("No audio track arrived. Choose a browser tab and turn on Share tab audio.");
-  }
+  if(!stream.getAudioTracks().length){stream.getTracks().forEach(track=>track.stop());throw new Error("No audio stream arrived. Choose a browser tab and enable Share tab audio.");}
   activeStream=stream;
-  const source=audioCtx.createMediaStreamSource(stream);
-  source.connect(analyser);
-  audioSource=label;audioLabel.textContent=label+" signal";syncAudioButtons();
+  audioCtx.createMediaStreamSource(stream).connect(analyser);
+  audioSource=label;signalReadout.textContent=label+" spectrum";syncAudio();
   stream.getAudioTracks()[0].addEventListener("ended",()=>{if(activeStream===stream)stopAudio();},{once:true});
-  showNotice(label==="tab"?"Tab spectrum connected: bands are now driving matter.":"Microphone spectrum connected: bands are now driving matter.",2500);
+  showNotice(label==="tab"?"Tab spectrum connected. Every patch route is now live.":"Microphone spectrum connected. Every patch route is now live.",2500);
 }
-async function listenTab(){
-  try{
-    if(!navigator.mediaDevices?.getDisplayMedia)throw new Error("Tab capture is not available in this browser context.");
-    showNotice("In the picker: select the Spotify/browser tab, then enable Share tab audio.",5200);
-    const stream=await navigator.mediaDevices.getDisplayMedia({video:true,audio:true});
-    // Leave the video track alive: Chrome can stop the audio capture if the display stream is ended.
-    await attachStream(stream,"tab");
-  }catch(err){showNotice(err.message||"Tab capture cancelled.",4200);}
-}
-async function listenMic(){
-  try{
-    if(!navigator.mediaDevices?.getUserMedia)throw new Error("Microphone capture needs GitHub Pages or localhost.");
-    const stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:false,autoGainControl:false}});
-    await attachStream(stream,"microphone");
-  }catch(err){showNotice(err.message||"Microphone capture cancelled.",4200);}
-}
-async function listenFile(file){
-  try{
-    stopAudio();await ensureAudio();
-    mediaEl=new Audio();mediaEl.loop=true;mediaEl.src=URL.createObjectURL(file);mediaEl.crossOrigin="anonymous";
-    mediaNode=audioCtx.createMediaElementSource(mediaEl);
-    mediaNode.connect(analyser);analyser.connect(audioCtx.destination);
-    await mediaEl.play();
-    audioSource="file";audioLabel.textContent="local file signal";syncAudioButtons();
-    showNotice("Local audio file connected: full spectrum is driving matter.",2200);
-  }catch(err){showNotice(err.message||"Could not play that file.",4200);}
-}
+async function listenTab(){try{if(!navigator.mediaDevices?.getDisplayMedia)throw new Error("Tab capture is unavailable in this browser context.");showNotice("Select the Spotify/browser tab and enable Share tab audio in Chrome’s picker.",5200);const stream=await navigator.mediaDevices.getDisplayMedia({video:true,audio:true});await attachStream(stream,"tab");}catch(err){showNotice(err.message||"Tab capture cancelled.",4200);}}
+async function listenMic(){try{if(!navigator.mediaDevices?.getUserMedia)throw new Error("Microphone capture needs GitHub Pages or localhost.");const stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:false,autoGainControl:false}});await attachStream(stream,"microphone");}catch(err){showNotice(err.message||"Microphone capture cancelled.",4200);}}
+async function listenFile(file){try{stopAudio();await ensureAudio();mediaEl=new Audio();mediaEl.loop=true;mediaEl.src=URL.createObjectURL(file);mediaNode=audioCtx.createMediaElementSource(mediaEl);mediaNode.connect(analyser);analyser.connect(audioCtx.destination);await mediaEl.play();audioSource="file";signalReadout.textContent="local file spectrum";syncAudio();showNotice("Local audio is driving the patch matrix.",2200);}catch(err){showNotice(err.message||"Could not play that file.",4200);}}
 
-/* ───────────────────── Fluid simulation / modular response ───────────────── */
+/* ─────────────────────────── Physics and outline math ────────────────────── */
 
-function updateBlobs(dt){
-  const mass=mapped("mass"), flow=mapped("flow"), hue=mapped("hue"), geom=mapped("geometry");
-  const bs=sceneData.blobs;
-  const pointerForce=pointer.down?1.0:(pointer.active?.22:0);
-  for(let i=0;i<bs.length;i++){
-    const b=bs[i];
-    const q=simTime*b.rate+b.phase;
-    const cx=.5+Math.cos(q*.77+i*.47)*(.055+.045*flow);
-    const cy=.5+Math.sin(q*1.11+i*.31)*(.040+.036*flow);
-
-    // soft organismal "goal" motion
-    b.vx+=(cx-b.x)*(.0017+.0019*flow)*dt;
-    b.vy+=(cy-b.y)*(.0017+.0019*flow)*dt;
-
-    // a curl-ish wave field; mid/bass action visibly changes direction instead of just size
-    b.vx+=Math.sin(b.y*10+simTime*1.3+b.phase)*(.00035+.00125*flow)*dt;
-    b.vy+=Math.cos(b.x*11-simTime*1.1+b.phase)*(.00035+.00125*flow)*dt;
-
-    // pointer has actual local gravitational / repulsive influence
-    if(pointerForce){
-      const dx=pointer.x-b.x,dy=pointer.y-b.y,dist2=dx*dx+dy*dy+.003;
-      const push=(pointer.down?1:-.32)*(.00078+.0023*flow)*pointerForce/dist2;
-      b.vx+=dx*push*dt;b.vy+=dy*push*dt;
-    }
-
-    b.vx*=.985;b.vy*=.985;b.x+=b.vx*dt;b.y+=b.vy*dt;
-    if(b.x<.07||b.x>.93)b.vx*=-.9;
-    if(b.y<.10||b.y>.87)b.vy*=-.9;
-    b.x=clamp(b.x,.055,.945);b.y=clamp(b.y,.08,.89);
-
-    // Frequency-routed mass changes have their own rhythm, phase, and flavor.
-    b.radius=lerp(b.radius,b.rest*(1+.18*Math.sin(q*1.7)+.74*mass+.10*pulse),.12);
-    b.currentColor=hueRotate(b.color,(Math.sin(q*1.2)+hue*2.3+b.flavor)*12);
-  }
-
-  // Pair interactions: not a full Navier-Stokes fluid, but actual soft attraction/
-  // separation produces living welded clusters rather than independent screen savers.
-  for(let i=0;i<bs.length;i++)for(let j=i+1;j<bs.length;j++){
-    const a=bs[i],b=bs[j],dx=b.x-a.x,dy=b.y-a.y,d=Math.hypot(dx,dy)+.0001;
-    const desired=(a.radius+b.radius)*(.74+.12*Math.sin(simTime+a.phase));
-    if(d<desired*1.8){
-      const f=(desired-d)*(.00011+.00018*geom);
-      a.vx-=dx/d*f*dt;a.vy-=dy/d*f*dt;b.vx+=dx/d*f*dt;b.vy+=dy/d*f*dt;
+function updateNodes(dt){
+  const ns=garden.nodes,gravity=control("gravity"),deform=control("deform"),mass=control("mass");
+  for(const n of ns){n.neighbors.length=0;}
+  for(let i=0;i<ns.length;i++){
+    const a=ns[i];
+    // Quietly pull each object into an orbital family, so they do not scatter.
+    const orbitA=a.phase+t*a.rate*.26;
+    const tx=.5+Math.cos(orbitA)*(.09+.08*Math.sin(a.phase*2));
+    const ty=.50+Math.sin(orbitA*1.17)*(.06+.06*Math.cos(a.phase));
+    a.vx+=(tx-a.x)*(.0010+.0009*gravity)*dt;
+    a.vy+=(ty-a.y)*(.0010+.0009*gravity)*dt;
+    if(pointer.active){
+      const dx=pointer.x-a.x,dy=pointer.y-a.y,d2=dx*dx+dy*dy+.003;
+      const force=(pointer.down?1:-.20)*(.00045+.0010*gravity)/d2;
+      a.vx+=dx*force*dt;a.vy+=dy*force*dt;
     }
   }
-}
-function localFlow(x,y){
-  const flow=mapped("flow"), geom=mapped("geometry");
-  let fx=Math.sin(y*10.5+simTime*1.45)*(.0011+.0024*flow);
-  let fy=Math.cos(x*11.2-simTime*1.22)*(.0011+.0024*flow);
-  for(const b of sceneData.blobs){
-    const dx=x-b.x,dy=y-b.y,d2=dx*dx+dy*dy+.0025;
-    // Tangential flow curls around matter, yielding fluid-like ribbon paths.
-    const k=b.radius*b.radius/d2*(.00032+.0013*geom);
-    fx+=-dy*k;fy+=dx*k;
+  for(let i=0;i<ns.length;i++)for(let j=i+1;j<ns.length;j++){
+    const a=ns[i],b=ns[j],dx=b.x-a.x,dy=b.y-a.y,d=Math.hypot(dx,dy)+.00001;
+    const rsum=a.r+b.r,ux=dx/d,uy=dy/d;
+    // Attraction exists across a larger neighborhood. Close bodies resist collapse.
+    const attraction=(.000035+.00013*gravity)*(1+mass*.30);
+    const repulsion=d<rsum*.84?(rsum*.84-d)*(.0020+.0022*deform):0;
+    const f=attraction-repulsion;
+    a.vx+=ux*f*dt;a.vy+=uy*f*dt;b.vx-=ux*f*dt;b.vy-=uy*f*dt;
+    if(d<rsum*2.25){a.neighbors.push({node:b,d,ux,uy,close:clamp(1-d/(rsum*2.25),0,1)});b.neighbors.push({node:a,d,ux:-ux,uy:-uy,close:clamp(1-d/(rsum*2.25),0,1)});}
   }
-  return {x:fx,y:fy};
-}
-function updateTracers(dt){
-  const p=sceneData.particles, flow=mapped("flow"), hue=mapped("hue");
-  const tw=trailCanvas.width,th=trailCanvas.height;
-  // Fade but do not erase: the persistence is what makes the field feel liquid.
-  trailCtx.fillStyle="rgba(1,4,6,.085)";
-  trailCtx.fillRect(0,0,tw,th);
-  trailCtx.lineCap="round";
-  for(let i=0;i<p.length;i++){
-    const a=p[i];
-    a.px=a.x;a.py=a.y;
-    const f=localFlow(a.x,a.y);
-    a.vx=(a.vx+f.x*dt)*( .965-.02*Math.min(flow,1));
-    a.vy=(a.vy+f.y*dt)*( .965-.02*Math.min(flow,1));
-    a.x+=a.vx*dt;a.y+=a.vy*dt;
-    a.age+=dt*.015*(1+flow);
-    if(a.x<-.05||a.x>1.05||a.y<-.05||a.y>1.05||a.age>a.life+1.1){
-      a.x=Math.random();a.y=Math.random();a.px=a.x;a.py=a.y;a.vx=0;a.vy=0;a.age=0;
-    }
-    if(i%2===0 || scene==="organism"){
-      const col=hueRotate(mix(palette.base,palette.accent,a.ink),hue*22+a.seed*14);
-      trailCtx.strokeStyle=rgb(col,.055+.16*clamp(hue,0,1));
-      trailCtx.lineWidth=.28+a.size*.45+flow*.45;
-      trailCtx.beginPath();trailCtx.moveTo(a.px*tw,a.py*th);trailCtx.lineTo(a.x*tw,a.y*th);trailCtx.stroke();
-    }
+  for(const n of ns){
+    n.r=lerp(n.r,n.baseR*(1+.26*mass+.06*Math.sin(t*n.rate+n.phase)+pulse*.11),.10);
+    n.vx*=.975;n.vy*=.975;n.x+=n.vx*dt;n.y+=n.vy*dt;
+    n.x=clamp(n.x,.10,.90);n.y=clamp(n.y,.12,.84);
   }
 }
+function outline(node){
+  const pts=[],deform=control("deform");
+  for(let i=0;i<node.vcount;i++){
+    const a=i/node.vcount*Math.PI*2+t*node.spin*.11;
+    let r=node.r*node.wiggle[i]*(1+.055*Math.sin(a*3+t*node.rate+node.phase));
+    for(const nb of node.neighbors){
+      const target=Math.atan2(nb.uy,nb.ux),delta=angleDiff(a,target);
+      // The facing side stretches toward a neighbor. It is an explicit deformation,
+      // not merely a screen-space glow.
+      r+=node.r*nb.close*deform*.72*Math.exp(-delta*delta*6.2);
+    }
+    pts.push({x:node.x+Math.cos(a)*r,y:node.y+Math.sin(a)*r});
+  }
+  return pts;
+}
 
-/* ────────────────────── Metaball / implicit-field renderer ───────────────── */
+/* ───────────────────────────────── Rendering ─────────────────────────────── */
 
-function drawMetaballs(){
-  const mass=mapped("mass"),hue=mapped("hue"),geom=mapped("geometry");
-  const bs=sceneData.blobs;
-  const data=fieldImage.data;
-  const threshold=1.04-(.13*mass);
-  let pi=0;
-
+function drawBackground(){
+  const g=ctx.createRadialGradient(W*.5,H*.49,12,W*.5,H*.52,Math.max(W,H)*.76);
+  g.addColorStop(0,rgb(mix(palette.deep,palette.base,.075),1));g.addColorStop(.52,rgb(mix([1,3,6],palette.shadow,.24),1));g.addColorStop(1,"rgb(1,3,5)");
+  ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+  ctx.globalAlpha=.04;ctx.fillStyle="#fff";for(let y=0;y<H;y+=4)ctx.fillRect(0,y,W,1);ctx.globalAlpha=1;
+}
+function drawGrid(){
+  ctx.save();ctx.strokeStyle=rgb(palette.base,.055);ctx.lineWidth=1;
+  const step=Math.max(38,Math.floor(Math.min(W,H)/13));
+  for(let x=W*.5%step;x<W;x+=step){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
+  for(let y=H*.5%step;y<H;y+=step){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+  ctx.restore();
+}
+function drawInkSplines(){
+  const E=control("splines"),cx=W*.5,cy=H*.50;
+  ctx.save();ctx.globalCompositeOperation="screen";
+  for(let j=0;j<garden.splines.length;j++){
+    const s=garden.splines[j],points=[];
+    for(let i=0;i<=110;i++){
+      const u=i/110,angle=(u-.5)*Math.PI*(1.12+.26*Math.sin(t*.2+s.phase));
+      const radius=(.08+u*.50+s.amp*Math.sin(u*8+t*s.rate+s.phase)*(1+E))*Math.min(W,H);
+      const x=cx+Math.cos(angle+s.offset)*radius;
+      const y=cy+Math.sin(angle*1.27+s.offset)*radius*.70+s.offset*H*.15;
+      points.push({x,y});
+    }
+    const col=bodyColor({hue:(j/garden.splines.length+.12)%1,tone:j/garden.splines.length,phase:s.phase},.1);
+    function stroke(pointsList,mirrored){
+      ctx.beginPath();
+      pointsList.forEach((p,i)=>{const xx=mirrored?W-p.x:p.x;if(i===0)ctx.moveTo(xx,p.y);else ctx.lineTo(xx,p.y);});
+      ctx.strokeStyle=rgb(col,.030+.10*E);ctx.lineWidth=.45+s.weight*(.45+E*.72);ctx.stroke();
+    }
+    stroke(points,false);
+    if(layers.mirror)stroke(points,true);
+  }
+  ctx.restore();
+}
+function drawSoftMembrane(){
+  const ns=garden.nodes,data=fieldImage.data;
+  let p=0;
+  // Higher threshold + contour-only alpha keeps this from becoming a huge cloudy bloom.
+  const threshold=1.92-control("mass")*.10;
   for(let gy=0;gy<fieldH;gy++){
     const y=(gy+.5)/fieldH;
-    for(let gx=0;gx<fieldW;gx++,pi+=4){
-      const x=(gx+.5)/fieldW;
-      let field=0,rr=0,gg=0,bb=0,wx=0,wy=0,weightSum=0;
-      for(let i=0;i<bs.length;i++){
-        const b=bs[i],dx=x-b.x,dy=y-b.y,d2=dx*dx+dy*dy+.00011;
-        const r2=b.radius*b.radius;
-        const w=r2/d2;
-        field+=w;weightSum+=w;
-        rr+=b.currentColor[0]*w;gg+=b.currentColor[1]*w;bb+=b.currentColor[2]*w;
-        wx+=-2*r2*dx/(d2*d2);wy+=-2*r2*dy/(d2*d2);
+    for(let gx=0;gx<fieldW;gx++,p+=4){
+      const x=(gx+.5)/fieldW;let f=0,cr=0,cg=0,cb=0,ws=0;
+      for(const n of ns){
+        const dx=x-n.x,dy=y-n.y,d2=dx*dx+dy*dy+.00017,w=(n.r*n.r)/d2;
+        f+=w;ws+=w;const c=bodyColor(n);cr+=c[0]*w;cg+=c[1]*w;cb+=c[2]*w;
       }
-      if(field>threshold){
-        const nx=-wx*.00018,ny=-wy*.00018,nz=.76;
-        const nl=Math.hypot(nx,ny,nz)||1;
-        const light=clamp((nx*.42+ny*(-.55)+nz*.83)/nl*.58+.43,0,1);
-        const edge=clamp((field-threshold)*1.35,0,1);
-        const texture=.88+.12*Math.sin(x*41+y*32+simTime*3.1+geom*5);
-        const base=[rr/weightSum,gg/weightSum,bb/weightSum];
-        const highTint=mix(base,palette.accent,clamp(.08+hue*.32,0,.68));
-        data[pi]=clamp(highTint[0]*light*texture,0,255);
-        data[pi+1]=clamp(highTint[1]*light*texture,0,255);
-        data[pi+2]=clamp(highTint[2]*light*texture,0,255);
-        data[pi+3]=Math.round(clamp((.28+edge*.70)*255,0,255));
-      }else{
-        data[pi]=0;data[pi+1]=0;data[pi+2]=0;data[pi+3]=0;
-      }
+      const band=Math.abs(f-threshold);
+      if(band<.24){
+        const alpha=(1-band/.24)*88;
+        data[p]=cr/ws;data[p+1]=cg/ws;data[p+2]=cb/ws;data[p+3]=alpha;
+      }else{data[p]=0;data[p+1]=0;data[p+2]=0;data[p+3]=0;}
     }
   }
   fieldCtx.putImageData(fieldImage,0,0);
+  ctx.save();ctx.globalCompositeOperation="screen";ctx.globalAlpha=.58;ctx.imageSmoothingEnabled=true;ctx.drawImage(fieldCanvas,0,0,fieldW,fieldH,0,0,W,H);ctx.restore();
+}
+function drawBridge(a,b){
+  const dx=b.x-a.x,dy=b.y-a.y,d=Math.hypot(dx,dy)+.00001,rs=a.r+b.r,close=clamp(1-d/(rs*1.62),0,1);
+  if(close<=0)return;
+  const ux=dx/d,uy=dy/d,nx=-uy,ny=ux;
+  const wa=a.r*(.10+.28*close),wb=b.r*(.10+.28*close);
+  const ax=(a.x+ux*a.r*.70)*W,ay=(a.y+uy*a.r*.70)*H,bx=(b.x-ux*b.r*.70)*W,by=(b.y-uy*b.r*.70)*H;
+  const c1x=ax+ux*d*W*.25,c1y=ay+uy*d*H*.25,c2x=bx-ux*d*W*.25,c2y=by-uy*d*H*.25;
+  const grad=ctx.createLinearGradient(ax,ay,bx,by);grad.addColorStop(0,rgb(bodyColor(a),.11+.34*close));grad.addColorStop(.5,rgb(palette.accent,.16+.25*close));grad.addColorStop(1,rgb(bodyColor(b),.11+.34*close));
+  ctx.fillStyle=grad;
+  ctx.beginPath();
+  ctx.moveTo(ax+nx*wa*H,ay+ny*wa*H);
+  ctx.bezierCurveTo(c1x+nx*wa*H,c1y+ny*wa*H,c2x+nx*wb*H,c2y+ny*wb*H,bx+nx*wb*H,by+ny*wb*H);
+  ctx.lineTo(bx-nx*wb*H,by-ny*wb*H);
+  ctx.bezierCurveTo(c2x-nx*wb*H,c2y-ny*wb*H,c1x-nx*wa*H,c1y-ny*wa*H,ax-nx*wa*H,ay-ny*wa*H);
+  ctx.closePath();ctx.fill();
+  ctx.strokeStyle=rgb(palette.accent,.08+.18*close);ctx.lineWidth=.65;ctx.stroke();
+}
+function drawBody(node){
+  const pts=outline(node),px=pts.map(p=>({x:p.x*W,y:p.y*H})),center={x:node.x*W,y:node.y*H};
+  const c=bodyColor(node),accent=mix(c,palette.accent,.42);
+  // Faceted internal triangles establish the "3D geometry" read.
+  for(let i=0;i<px.length;i++){
+    const a=px[i],b=px[(i+1)%px.length],light=clamp(.25+.70*((a.x-center.x)/Math.max(1,node.r*W)+1)/2,0,1);
+    ctx.fillStyle=rgb(mix(c,accent,light*.50),.28*intensity);
+    ctx.beginPath();ctx.moveTo(center.x,center.y);ctx.lineTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.closePath();ctx.fill();
+  }
+  const grad=ctx.createRadialGradient(center.x-node.r*W*.22,center.y-node.r*H*.30,node.r*W*.04,center.x,center.y,node.r*Math.min(W,H)*1.15);
+  grad.addColorStop(0,rgb(palette.accent,.42*intensity));grad.addColorStop(.30,rgb(c,.32*intensity));grad.addColorStop(1,rgb(mix(c,palette.deep,.48),.55*intensity));
+  ctx.fillStyle=grad;ctx.beginPath();px.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));ctx.closePath();ctx.fill();
+  ctx.strokeStyle=rgb(palette.accent,.28+.22*control("deform"));ctx.lineWidth=.85;ctx.stroke();
 
-  ctx.save();
-  // A blurred back-pass makes material glow; the crisp pass restores liquid edges.
-  ctx.globalCompositeOperation="screen";
-  ctx.globalAlpha=.78;
-  ctx.filter="blur(16px)";
-  ctx.drawImage(fieldCanvas,0,0,fieldW,fieldH,0,0,W,H);
-  ctx.filter="none";
-  ctx.globalAlpha=.96;
-  ctx.drawImage(fieldCanvas,0,0,fieldW,fieldH,0,0,W,H);
+  // Texture: rings, hatch, or node dots — different material surface in each body.
+  ctx.save();ctx.clip();ctx.globalCompositeOperation="screen";
+  if(node.texture<.34){
+    for(let k=1;k<4;k++){ctx.strokeStyle=rgb(palette.accent,.08);ctx.lineWidth=.55;ctx.beginPath();ctx.arc(center.x,center.y,node.r*Math.min(W,H)*(.17+k*.16),0,Math.PI*2);ctx.stroke();}
+  }else if(node.texture<.67){
+    ctx.strokeStyle=rgb(palette.accent,.10);ctx.lineWidth=.65;
+    for(let k=-3;k<=3;k++){ctx.beginPath();ctx.moveTo(center.x-node.r*W,center.y+k*node.r*H*.28);ctx.lineTo(center.x+node.r*W,center.y+(k+.6)*node.r*H*.28);ctx.stroke();}
+  }else{
+    ctx.fillStyle=rgb(palette.accent,.13);
+    for(let k=0;k<7;k++){const a=k/7*Math.PI*2+node.phase;ctx.beginPath();ctx.arc(center.x+Math.cos(a)*node.r*W*.38,center.y+Math.sin(a)*node.r*H*.38,1.5+control("hue")*1.8,0,Math.PI*2);ctx.fill();}
+  }
   ctx.restore();
-
-  // Nuclei, highlights, and textural differentiation give the fused material interior structure.
-  ctx.save();ctx.globalCompositeOperation="screen";
-  for(const b of bs){
-    const x=b.x*W,y=b.y*H,r=b.radius*Math.min(W,H);
-    const grad=ctx.createRadialGradient(x-r*.25,y-r*.34,r*.02,x,y,r*.92);
-    grad.addColorStop(0,rgb(palette.accent,.22+.23*bands.air));
-    grad.addColorStop(.25,rgb(b.currentColor,.10+.10*hue));
-    grad.addColorStop(1,rgb(b.currentColor,0));
-    ctx.fillStyle=grad;ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fill();
-
-    // A per-blob texture mark: orbit rings / split striations / pitted dots.
-    ctx.strokeStyle=rgb(palette.accent,.08+.13*bands.highMid);
-    ctx.lineWidth=.55;
-    if(b.texture<.33){
-      ctx.beginPath();ctx.ellipse(x,y,r*.56,r*.30,simTime*.4+b.phase,0,Math.PI*2);ctx.stroke();
-    }else if(b.texture<.66){
-      ctx.beginPath();ctx.moveTo(x-r*.52,y-r*.08);ctx.quadraticCurveTo(x,y+r*.20,x+r*.52,y-r*.12);ctx.stroke();
-    }else{
-      for(let k=0;k<3;k++){ctx.beginPath();ctx.arc(x+Math.sin(b.phase+k)*r*.35,y+Math.cos(b.phase*1.7+k)*r*.32,1.2+bands.air*2,0,Math.PI*2);ctx.fillStyle=rgb(palette.accent,.12);ctx.fill();}
+}
+function drawBodiesAndBridges(){
+  const ns=garden.nodes;
+  if(layers.bridges)for(let i=0;i<ns.length;i++)for(let j=i+1;j<ns.length;j++)drawBridge(ns[i],ns[j]);
+  if(layers.bodies)ns.slice().sort((a,b)=>a.y-b.y).forEach(drawBody);
+}
+function drawParticles(dt){
+  const ps=garden.particles,E=control("particles"),tw=trailCanvas.width,th=trailCanvas.height;
+  trailCtx.fillStyle="rgba(1,4,7,.075)";trailCtx.fillRect(0,0,tw,th);
+  trailCtx.lineCap="round";
+  for(let i=0;i<ps.length;i++){
+    const p=ps[i];p.px=p.x;p.py=p.y;
+    let fx=Math.sin(p.y*10+t*1.2+p.flavor*5)*(.00045+.0020*E),fy=Math.cos(p.x*11-t*1.1+p.flavor*6)*(.00045+.0020*E);
+    for(const n of garden.nodes){
+      const dx=p.x-n.x,dy=p.y-n.y,d2=dx*dx+dy*dy+.002;
+      // Tangential node flow makes particles curl rather than merely spray away.
+      const k=n.r*n.r/d2*(.00024+.0012*E);
+      fx+=-dy*k;fy+=dx*k;
+    }
+    p.vx=(p.vx+fx*dt)*.976;p.vy=(p.vy+fy*dt)*.976;p.x+=p.vx*dt;p.y+=p.vy*dt;p.age+=dt*.018*(1+E);
+    if(p.x<-.04||p.x>1.04||p.y<-.04||p.y>1.04||p.age>p.life){p.x=Math.random();p.y=Math.random();p.px=p.x;p.py=p.y;p.vx=0;p.vy=0;p.age=0;}
+    if(i%2===0){
+      const c=palette.kind==="rainbow"?hslRgb((p.flavor+t*.012+control("hue")*.08)%1,.78,.62):mix(palette.base,palette.accent,p.flavor);
+      trailCtx.strokeStyle=rgb(c,.025+.14*E);trailCtx.lineWidth=.24+p.size*.42+E*.35;trailCtx.beginPath();trailCtx.moveTo(p.px*tw,p.py*th);trailCtx.lineTo(p.x*tw,p.y*th);trailCtx.stroke();
     }
   }
+  ctx.save();ctx.globalCompositeOperation="screen";ctx.globalAlpha=.95;ctx.drawImage(trailCanvas,0,0,tw,th,0,0,W,H);ctx.restore();
+}
+function drawSymbols(){
+  const E=control("symbols"),visible=Math.floor(42+E*150);
+  ctx.save();ctx.globalCompositeOperation="screen";ctx.textAlign="center";ctx.textBaseline="middle";
+  for(let i=0;i<Math.min(visible,garden.symbols.length);i++){
+    const s=garden.symbols[i];s.vx+=Math.sin(t*.8+s.phase)*.00001*E;s.vy+=Math.cos(t*.7+s.phase)*.00001*E;s.x+=s.vx;s.y+=s.vy;s.age+=.01;
+    if(s.x<-.03||s.x>1.03||s.y<-.03||s.y>1.03){s.x=Math.random();s.y=Math.random();s.vx=(Math.random()-.5)*.0006;s.vy=(Math.random()-.5)*.0006;}
+    const c=palette.kind==="rainbow"?hslRgb((s.flavor+t*.015+control("hue")*.12)%1,.83,.68):mix(palette.base,palette.accent,s.flavor);
+    const alpha=.08+.24*E*(.45+.55*Math.sin(t*1.1+s.phase)**2);
+    ctx.fillStyle=rgb(c,alpha);ctx.font=`${Math.round(s.size*(.62+E*.32))}px "Segoe UI Symbol","Noto Sans Symbols",sans-serif`;ctx.fillText(s.glyph,s.x*W,s.y*H);
+  }
   ctx.restore();
 }
-
-/* ────────────────────── Alternative 2D manifestations ───────────────────── */
-
-function drawSpectralTiles(){
-  const geometry=mapped("geometry"),hue=mapped("hue"),mass=mapped("mass");
-  // Field stays as a ghost substrate; tiles become individually frequency-aware geometry.
-  ctx.save();ctx.globalAlpha=.30;ctx.globalCompositeOperation="screen";
-  ctx.drawImage(fieldCanvas,0,0,fieldW,fieldH,0,0,W,H);ctx.restore();
-
-  const cx=W*.5,cy=H*.49,unit=Math.min(W,H);
+function drawLife(){
+  const L=life,cellW=W/L.cols,cellH=H/L.rows,E=control("life");
   ctx.save();ctx.globalCompositeOperation="screen";
-  for(let i=0;i<sceneData.tiles.length;i++){
-    const t=sceneData.tiles[i];
-    const band=bandNames[i%bandNames.length], e=bands[band]*response;
-    const a=t.a+simTime*.16*t.rate+(i%2?1:-1)*geometry*.22;
-    const radius=(t.rad+.11*mass+e*.30)*unit;
-    const x=cx+Math.cos(a)*radius,y=cy+Math.sin(a)*radius*.72;
-    const len=(t.len+.14*e+.08*geometry)*unit;
-    const w=(t.w+.015*e)*unit;
-    const color=hueRotate(mix(palette.base,palette.accent,(i%7)/7),hue*24+t.flavor*12);
-
-    ctx.save();ctx.translate(x,y);ctx.rotate(a+Math.PI/2+Math.sin(simTime+t.phase)*.4);
-    const grad=ctx.createLinearGradient(-len,0,len,0);
-    grad.addColorStop(0,rgb(color,0));
-    grad.addColorStop(.38,rgb(color,.19+.55*e));
-    grad.addColorStop(.52,rgb(palette.accent,.42+.37*e));
-    grad.addColorStop(1,rgb(color,0));
-    ctx.fillStyle=grad;
-    ctx.beginPath();
-    ctx.moveTo(-len,-w);ctx.lineTo(len*.66,-w*(.65+e));ctx.lineTo(len,w*(.55+e));ctx.lineTo(-len*.72,w);ctx.closePath();ctx.fill();
-    ctx.strokeStyle=rgb(palette.accent,.12+.35*bands.air);ctx.lineWidth=.7;ctx.stroke();
-    ctx.restore();
+  for(let y=0;y<L.rows;y++)for(let x=0;x<L.cols;x++)if(L.current[y*L.cols+x]){
+    const wave=.58+.42*Math.sin(t*3+x*.24+y*.16);
+    const c=palette.kind==="rainbow"?hslRgb((x/L.cols+t*.018+control("hue")*.1)%1,.76,.64):mix(palette.base,palette.accent,((x+y)%13)/13);
+    ctx.fillStyle=rgb(c,(.07+.24*E)*wave);ctx.fillRect(x*cellW,y*cellH,Math.max(.9,cellW*.72),Math.max(.9,cellH*.72));
   }
-  ctx.restore();
-
-  // A radial six-band EQ flower: each band owns a spoke family.
-  ctx.save();ctx.translate(cx,cy);ctx.globalCompositeOperation="screen";
-  for(let i=0;i<72;i++){
-    const band=bandNames[i%6],e=bands[band]*response;
-    const a=i/72*Math.PI*2+simTime*.09;
-    const inn=unit*(.06+.02*Math.sin(simTime+i));
-    const out=unit*(.11+.26*e+.10*geometry);
-    ctx.strokeStyle=rgb(hueRotate(palette.base,i%6*9),.08+.25*e);
-    ctx.lineWidth=.45+e*2;
-    ctx.beginPath();ctx.moveTo(Math.cos(a)*inn,Math.sin(a)*inn);ctx.lineTo(Math.cos(a)*out,Math.sin(a)*out);ctx.stroke();
-  }
-  ctx.restore();
-}
-
-function drawOrganism(){
-  const hue=mapped("hue"),geom=mapped("geometry"),flow=mapped("flow"),mass=mapped("mass");
-  ctx.save();ctx.globalCompositeOperation="screen";ctx.globalAlpha=.42;ctx.drawImage(fieldCanvas,0,0,fieldW,fieldH,0,0,W,H);ctx.restore();
-
-  const cx=W*.5,cy=H*.50,unit=Math.min(W,H);
-  ctx.save();ctx.globalCompositeOperation="screen";
-  for(let j=0;j<sceneData.tendrils.length;j++){
-    const tr=sceneData.tendrils[j];
-    ctx.beginPath();
-    for(let i=0;i<=70;i++){
-      const u=i/70;
-      const a=tr.phase+u*3.0+simTime*tr.rate*.34;
-      const r=(tr.rad+u*(.12+.24*geom)+mass*.045)*unit;
-      const wob=Math.sin(u*12+simTime*2.1+tr.phase)*tr.amp*unit*(.35+flow);
-      const x=cx+Math.cos(a)*r+wob*Math.cos(a+Math.PI/2);
-      const y=cy+Math.sin(a)*r*.66+wob*Math.sin(a+Math.PI/2)*.65+tr.offset*unit;
-      if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);
-    }
-    ctx.strokeStyle=rgb(hueRotate(palette.base,hue*26+j*5),.08+.18*bands.highMid);
-    ctx.lineWidth=.65+geom*1.45;ctx.stroke();
-  }
-  // Segment-wise "cells" carry different bands, not generic beat blinking.
-  for(let i=0;i<sceneData.blobs.length;i++){
-    const b=sceneData.blobs[i],x=b.x*W,y=b.y*H,r=b.radius*unit*(.5+.3*mass);
-    const e=bands[bandNames[i%6]]*response;
-    ctx.fillStyle=rgb(hueRotate(b.currentColor,e*22),.08+.25*e);
-    ctx.beginPath();ctx.arc(x,y,r*(.18+.35*e),0,Math.PI*2);ctx.fill();
-    ctx.strokeStyle=rgb(palette.accent,.14+.32*e);ctx.lineWidth=.8+e*1.4;ctx.stroke();
-  }
-  ctx.restore();
-}
-
-/* ───────────────────────── Drawing utilities / HUD visualizer ────────────── */
-
-function drawBackground(){
-  const g=ctx.createRadialGradient(W*.5,H*.48,8,W*.5,H*.50,Math.max(W,H)*.75);
-  g.addColorStop(0,rgb(mix(palette.deep,palette.base,.08),1));
-  g.addColorStop(.52,rgb(mix([1,3,5],palette.shadow,.28),1));
-  g.addColorStop(1,"rgb(1,3,5)");
-  ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
-
-  // Star/dust grid is intentionally subtle, so motion stays legible.
-  ctx.globalAlpha=.035;ctx.fillStyle="#fff";
-  for(let y=0;y<H;y+=4)ctx.fillRect(0,y,W,1);
-  ctx.globalAlpha=1;
-  for(const m of sceneData.motes){
-    const x=(m.x*W+Math.sin(simTime*.19+m.phase)*m.z*32+W)%W;
-    const y=(m.y*H+Math.cos(simTime*.14+m.phase)*m.z*18+H)%H;
-    ctx.fillStyle=rgb(palette.accent,.025+m.z*.11+bands.air*.08);
-    ctx.beginPath();ctx.arc(x,y,m.size*(.3+bands.air),0,Math.PI*2);ctx.fill();
-  }
-}
-function drawTrailLayer(){
-  ctx.save();ctx.globalCompositeOperation="screen";ctx.globalAlpha=.94;
-  ctx.drawImage(trailCanvas,0,0,trailCanvas.width,trailCanvas.height,0,0,W,H);
   ctx.restore();
 }
 function drawEQ(){
-  const x=18,y=72,w=Math.min(246,W*.25),h=56;
-  if(W<650)return;
-  ctx.save();
-  ctx.fillStyle="rgba(2,8,11,.37)";ctx.strokeStyle="rgba(235,247,243,.08)";
-  ctx.lineWidth=1;ctx.beginPath();ctx.roundRect(x,y,w,h,8);ctx.fill();ctx.stroke();
+  const x=W-244,y=72,w=226,h=72;
+  if(W<740)return;
+  ctx.save();ctx.fillStyle="rgba(2,8,11,.36)";ctx.strokeStyle="rgba(255,255,255,.08)";ctx.beginPath();ctx.roundRect(x,y,w,h,9);ctx.fill();ctx.stroke();
   const gap=5,bw=(w-14-gap*5)/6;
   for(let i=0;i<6;i++){
-    const key=bandNames[i],v=clamp(bands[key]*response,0,1),bh=(h-23)*v;
-    const bx=x+7+i*(bw+gap),by=y+h-8-bh;
-    const grad=ctx.createLinearGradient(0,by,0,y+h-8);
-    grad.addColorStop(0,rgb(palette.accent,.86));grad.addColorStop(1,rgb(palette.base,.18));
-    ctx.fillStyle=grad;ctx.fillRect(bx,by,bw,bh);
-    ctx.fillStyle="rgba(236,247,243,.52)";ctx.font="8px ui-monospace, monospace";ctx.textAlign="center";
-    ctx.fillText(bandLabels[key].replace("-",""),bx+bw/2,y+h-2);
+    const k=bandNames[i],v=clamp(bands[k]*response,0,1),bh=v*(h-23),bx=x+7+i*(bw+gap),by=y+h-8-bh;
+    const c=palette.kind==="rainbow"?hslRgb(i/6+t*.015,.82,.62):mix(palette.base,palette.accent,i/6);
+    const g=ctx.createLinearGradient(0,by,0,y+h-8);g.addColorStop(0,rgb(palette.accent,.86));g.addColorStop(1,rgb(c,.16));ctx.fillStyle=g;ctx.fillRect(bx,by,bw,bh);
+    ctx.fillStyle="rgba(239,250,245,.55)";ctx.font="7px ui-monospace,monospace";ctx.textAlign="center";ctx.fillText(bandLabels[k].replace("-",""),bx+bw/2,y+h-2);
   }
-  ctx.restore();
+  ctx.strokeStyle=rgb(palette.base,.36);ctx.lineWidth=1;ctx.beginPath();history.forEach((v,i)=>{const px=x+i/(history.length-1)*w,py=y+h-12-v*(h-24)*3.3;i?ctx.lineTo(px,py):ctx.moveTo(px,py);});ctx.stroke();ctx.restore();
 }
-function drawSpectrumHistory(){
-  if(W<650)return;
-  const x=18,y=137,w=Math.min(246,W*.25),h=24;
-  ctx.save();ctx.strokeStyle=rgb(palette.base,.35);ctx.lineWidth=1;ctx.beginPath();
-  eqHistory.forEach((v,i)=>{const px=x+i/(eqHistory.length-1)*w,py=y+h-v*h*3.2;if(i===0)ctx.moveTo(px,py);else ctx.lineTo(px,py);});
-  ctx.stroke();ctx.restore();
-}
-function drawVignette(){
-  const v=ctx.createRadialGradient(W*.5,H*.5,Math.min(W,H)*.15,W*.5,H*.5,Math.max(W,H)*.75);
-  v.addColorStop(.56,"rgba(0,0,0,0)");v.addColorStop(1,"rgba(0,0,0,.61)");
-  ctx.fillStyle=v;ctx.fillRect(0,0,W,H);
-}
-function drawPointerSigil(){
+function drawPointer(){
   if(!pointer.active)return;
-  const x=pointer.x*W,y=pointer.y*H,r=11+pulse*9+mapped("geometry")*8;
-  ctx.save();ctx.globalCompositeOperation="screen";ctx.strokeStyle=rgb(palette.accent,.17+.26*bands.air);ctx.lineWidth=.8;
-  ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.stroke();
-  ctx.beginPath();ctx.arc(x,y,r*.45,0,Math.PI*2);ctx.stroke();
-  ctx.restore();
+  const E=control("deform"),x=pointer.x*W,y=pointer.y*H,r=10+E*13+pulse*10;
+  ctx.save();ctx.globalCompositeOperation="screen";ctx.strokeStyle=rgb(palette.accent,.16+.24*E);ctx.lineWidth=.75;ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.stroke();ctx.beginPath();ctx.arc(x,y,r*.46,0,Math.PI*2);ctx.stroke();ctx.restore();
 }
+function drawVignette(){const g=ctx.createRadialGradient(W*.5,H*.5,Math.min(W,H)*.18,W*.5,H*.5,Math.max(W,H)*.74);g.addColorStop(.57,"rgba(0,0,0,0)");g.addColorStop(1,"rgba(0,0,0,.63)");ctx.fillStyle=g;ctx.fillRect(0,0,W,H);}
 
 /* ───────────────────────────────── Main loop ─────────────────────────────── */
 
-function render(t){
-  const dt=clamp((t-last)/16.67,.25,2.2);last=t;simTime+=dt*.016;frame++;
-  updateAudio();
-  updateBlobs(dt);
-  updateTracers(dt);
-  pulse*=.955;
-
+function render(now){
+  const dt=clamp((now-last)/16.67,.25,2.2);last=now;t+=dt*.016;updateAudio();updateNodes(dt);pulse*=.954;
+  lifeTimer+=dt*(.18+control("life")*2.5);if(lifeTimer>1){lifeTimer=0;updateLife();}
   drawBackground();
-  drawMetaballs();
-  if(scene==="fluid"){
-    drawTrailLayer();
-  }else if(scene==="tiles"){
-    drawSpectralTiles();
-    drawTrailLayer();
-  }else{
-    drawOrganism();
-    drawTrailLayer();
-  }
-  drawEQ();drawSpectrumHistory();drawPointerSigil();drawVignette();
+  if(layers.grid)drawGrid();
+  if(layers.life)drawLife();
+  if(layers.splines)drawInkSplines();
+  if(layers.field)drawSoftMembrane();
+  if(layers.particles)drawParticles(dt);
+  drawBodiesAndBridges();
+  if(layers.symbols)drawSymbols();
+  if(layers.eq)drawEQ();
+  drawPointer();drawVignette();
   requestAnimationFrame(render);
 }
 
-/* ───────────────────────────── UI and input hooks ────────────────────────── */
+/* ─────────────────────────────────── UI setup ────────────────────────────── */
 
-function setScene(next){
-  scene=next;
-  const labels={fluid:"Fluid Field",tiles:"Spectral Tiles",organism:"Organism"};
-  sceneLabel.textContent=labels[scene];
-  document.querySelectorAll(".scene").forEach(b=>b.classList.toggle("active",b.dataset.scene===scene));
-  pulse=1.0;
+Object.entries(palettes).forEach(([key,p])=>{const o=document.createElement("option");o.value=key;o.textContent=p.name;$("paletteSelect").appendChild(o);});
+$("paletteSelect").value=paletteKey;
+$("paletteSelect").addEventListener("change",e=>{paletteKey=e.target.value;palette=palettes[paletteKey];paletteReadout.textContent=palette.name;pulse=1;});
+for(const [name,button] of Object.entries(layers)){
+  const el=document.querySelector(`[data-layer="${name}"]`);
+  el.addEventListener("click",()=>{layers[name]=!layers[name];el.classList.toggle("active",layers[name]);pulse=.52;});
 }
-document.querySelectorAll(".scene").forEach(b=>b.addEventListener("click",()=>setScene(b.dataset.scene)));
-$("mutate").addEventListener("click",()=>{buildScene(((Math.random()*0xffffffff)>>>0)^(Date.now()>>>0));pulse=1.35;showNotice("Matter recipe reconstructed from a new seed.",1800);});
+for(const name of Object.keys(routes)){
+  const select=$("route"+name.charAt(0).toUpperCase()+name.slice(1));
+  bandNames.forEach(k=>{const o=document.createElement("option");o.value=k;o.textContent=bandLabels[k];select.appendChild(o);});
+  select.value=routes[name];select.addEventListener("change",()=>{routes[name]=select.value;pulse=.6;});
+}
+$("intensity").addEventListener("input",e=>intensity=Number(e.target.value));
+$("response").addEventListener("input",e=>response=Number(e.target.value));
+$("bodyCount").addEventListener("input",e=>{bodyCount=Number(e.target.value);makeGarden(((Math.random()*0xffffffff)>>>0)^(Date.now()>>>0));pulse=1;});
+$("mutate").addEventListener("click",()=>{makeGarden(((Math.random()*0xffffffff)>>>0)^(Date.now()>>>0));pulse=1.35;showNotice("New specimen seeded. Geometry, glyphs, and relationships rebuilt.",1800);});
+$("collapseDeck").addEventListener("click",()=>{deckCollapsed=!deckCollapsed;$("deck").classList.toggle("collapsed",deckCollapsed);$("collapseDeck").textContent=deckCollapsed?"Show":"Hide";});
 $("tabAudio").addEventListener("click",listenTab);
 $("micAudio").addEventListener("click",listenMic);
 $("fileAudio").addEventListener("click",()=>$("audioFile").click());
-$("audioFile").addEventListener("change",e=>{if(e.target.files&&e.target.files[0])listenFile(e.target.files[0]);e.target.value="";});
+$("audioFile").addEventListener("change",e=>{if(e.target.files?.[0])listenFile(e.target.files[0]);e.target.value="";});
 $("stopAudio").addEventListener("click",stopAudio);
-$("response").addEventListener("input",e=>response=Number(e.target.value));
 
-for(const name of ["mass","flow","hue","geometry"]){
-  const select=$(name+"Route");
-  bandNames.forEach(key=>{const o=document.createElement("option");o.value=key;o.textContent=bandLabels[key];select.appendChild(o);});
-  select.value=routes[name];
-  select.addEventListener("change",()=>{routes[name]=select.value;pulse=.72;});
-}
-
-function posFromEvent(e){
-  const rect=canvas.getBoundingClientRect();
-  return {x:clamp((e.clientX-rect.left)/rect.width,0,1),y:clamp((e.clientY-rect.top)/rect.height,0,1)};
-}
-canvas.addEventListener("pointermove",e=>{
-  const p=posFromEvent(e);pointer.px=pointer.x;pointer.py=pointer.y;pointer.x=p.x;pointer.y=p.y;pointer.active=true;
-});
-canvas.addEventListener("pointerdown",e=>{
-  canvas.setPointerCapture(e.pointerId);const p=posFromEvent(e);pointer.x=p.x;pointer.y=p.y;pointer.down=true;pointer.active=true;pulse=.28;
-});
+function pointerPos(e){const r=canvas.getBoundingClientRect();return{x:clamp((e.clientX-r.left)/r.width,0,1),y:clamp((e.clientY-r.top)/r.height,0,1)};}
+canvas.addEventListener("pointermove",e=>{const p=pointerPos(e);pointer.x=p.x;pointer.y=p.y;pointer.active=true;});
+canvas.addEventListener("pointerdown",e=>{canvas.setPointerCapture(e.pointerId);const p=pointerPos(e);pointer.x=p.x;pointer.y=p.y;pointer.down=true;pointer.active=true;pulse=.3;});
 function release(e){pointer.down=false;try{canvas.releasePointerCapture(e.pointerId);}catch(_){}}
-canvas.addEventListener("pointerup",release);canvas.addEventListener("pointercancel",release);
-canvas.addEventListener("pointerleave",()=>{if(!pointer.down)pointer.active=false;});
-window.addEventListener("keydown",e=>{
-  if(e.key==="1")setScene("fluid");if(e.key==="2")setScene("tiles");if(e.key==="3")setScene("organism");
-  if(e.key.toLowerCase()==="m")$("mutate").click();
-  if(e.key===" "){pulse=1.6;e.preventDefault();}
-});
-function resize(){
-  W=innerWidth;H=innerHeight;DPR=Math.min(devicePixelRatio||1,2);
-  canvas.width=Math.floor(W*DPR);canvas.height=Math.floor(H*DPR);canvas.style.width=W+"px";canvas.style.height=H+"px";ctx.setTransform(DPR,0,0,DPR,0,0);
-  resetTrails();updateFieldResolution();
-}
-window.addEventListener("resize",resize);
-
-buildScene(seed);resize();requestAnimationFrame(render);
+canvas.addEventListener("pointerup",release);canvas.addEventListener("pointercancel",release);canvas.addEventListener("pointerleave",()=>{if(!pointer.down)pointer.active=false;});
+window.addEventListener("keydown",e=>{if(e.key.toLowerCase()==="m")$("mutate").click();if(e.key===" "){pulse=1.7;e.preventDefault();}});
+resize();makeGarden(seed);requestAnimationFrame(render);
 })();
 </script>
 </body>
