@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Listening Pedestal — Signal Garden v5</title>
+<title>Listening Pedestal — Signal Garden v15 Drive Tunnel</title>
 <style>
 :root{--ink:#eef9f4;--muted:rgba(238,249,244,.62);--hair:rgba(238,249,244,.12);--pane:rgba(4,10,14,.77)}
 *{box-sizing:border-box}html,body{width:100%;height:100%;margin:0;overflow:hidden;background:#010407;color:var(--ink);font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace}
@@ -13,12 +13,12 @@ canvas{display:block;width:100%;height:100%;touch-action:none;cursor:crosshair}.
 .deck{position:absolute;left:14px;top:76px;width:282px;max-height:calc(100vh - 220px);overflow:auto;pointer-events:auto;border:1px solid var(--hair);border-radius:14px;background:linear-gradient(135deg,rgba(9,19,24,.9),rgba(3,7,11,.66));box-shadow:0 18px 70px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.04);backdrop-filter:blur(16px);transition:transform .25s ease,opacity .25s ease}.deck.hide{transform:translateX(-296px);opacity:.2}
 .deckHead{padding:10px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(255,255,255,.08)}.deckTitle{font-size:10px;letter-spacing:.13em;text-transform:uppercase}
 .section{padding:9px 10px;border-bottom:1px solid rgba(255,255,255,.055)}.section:last-child{border-bottom:none}.sectionLabel{margin-bottom:7px;color:rgba(238,249,244,.56);font-size:8px;letter-spacing:.13em;text-transform:uppercase}
-.layers{display:grid;grid-template-columns:1fr 1fr;gap:5px}.route{display:grid;grid-template-columns:84px 1fr;align-items:center;gap:6px;margin:5px 0;color:rgba(238,249,244,.66);font-size:8px;letter-spacing:.07em;text-transform:uppercase}.rangeRow{display:flex;justify-content:space-between;align-items:center;gap:7px;color:rgba(238,249,244,.66);font-size:8px;letter-spacing:.07em;text-transform:uppercase;margin:5px 0}
+.layers{display:grid;grid-template-columns:1fr 1fr;gap:5px}.layer{cursor:grab;user-select:none}.layer.dragging{opacity:.28;transform:scale(.96)}.layer.dropHint{outline:1px dashed rgba(255,255,255,.55);outline-offset:2px}.route{display:grid;grid-template-columns:84px 1fr;align-items:center;gap:6px;margin:5px 0;color:rgba(238,249,244,.66);font-size:8px;letter-spacing:.07em;text-transform:uppercase}.rangeRow{display:flex;justify-content:space-between;align-items:center;gap:7px;color:rgba(238,249,244,.66);font-size:8px;letter-spacing:.07em;text-transform:uppercase;margin:5px 0}
 button{appearance:none;border:1px solid rgba(255,255,255,.13);border-radius:9px;background:rgba(255,255,255,.035);color:var(--ink);padding:8px 8px;font:inherit;font-size:8px;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;transition:transform .15s,background .15s,border-color .15s}button:hover{transform:translateY(-1px);background:rgba(255,255,255,.11);border-color:rgba(255,255,255,.36)}button.active{background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.48)}button.live{border-color:rgba(255,255,255,.7);box-shadow:0 0 18px rgba(255,255,255,.13)}.small{padding:5px 7px;font-size:8px}.manuals{display:flex;gap:5px;flex-wrap:wrap}.manuals button{flex:1 1 30%}
 select,input[type=range]{pointer-events:auto}select{appearance:none;width:100%;border:1px solid rgba(255,255,255,.12);border-radius:7px;padding:6px 20px 6px 7px;background:rgba(255,255,255,.045);color:#f3fcf8;font:inherit;font-size:8px;letter-spacing:.05em;cursor:pointer;background-image:linear-gradient(45deg,transparent 50%,#e4f0eb 50%),linear-gradient(135deg,#e4f0eb 50%,transparent 50%);background-position:calc(100% - 10px) 9px,calc(100% - 6px) 9px;background-size:4px 4px,4px 4px;background-repeat:no-repeat}option{color:#fff;background:#111a1e}input[type=range]{accent-color:#f2fff9;width:128px}
 .check{display:flex;align-items:center;gap:6px;color:rgba(238,249,244,.67);font-size:8px;letter-spacing:.07em;text-transform:uppercase;margin:5px 0}.check input{accent-color:#fff}
 .bottom{position:absolute;left:50%;bottom:13px;translate:-50% 0;width:min(950px,calc(100vw - 28px));display:flex;flex-direction:column;gap:7px;pointer-events:auto}.hint{pointer-events:none;text-align:center;font-size:8px;color:rgba(238,249,244,.47);letter-spacing:.1em;text-transform:uppercase}.hint b{color:rgba(238,249,244,.88);font-weight:500}.controls{border:1px solid var(--hair);border-radius:15px;padding:8px;display:flex;justify-content:center;align-items:center;gap:6px;flex-wrap:wrap;background:linear-gradient(125deg,rgba(8,17,22,.87),rgba(3,8,11,.58));box-shadow:0 16px 70px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.04);backdrop-filter:blur(15px)}.mutate{background:rgba(255,255,255,.1)}
-.notice{position:absolute;left:50%;top:44%;translate:-50% -50%;width:min(460px,80vw);padding:10px 13px;border:1px solid rgba(255,255,255,.1);border-radius:12px;background:rgba(3,8,12,.7);backdrop-filter:blur(14px);box-shadow:0 12px 55px rgba(0,0,0,.35);font-size:10px;line-height:1.55;text-align:center;letter-spacing:.04em;color:rgba(240,251,246,0);opacity:0;transition:opacity .28s,color .28s;pointer-events:none}.notice.show{opacity:1;color:rgba(240,251,246,.9)}
+
 details{position:absolute;right:15px;bottom:95px;width:min(400px,calc(100vw - 30px));padding:7px 10px;border:1px solid rgba(255,255,255,.075);border-radius:11px;background:rgba(3,8,11,.48);backdrop-filter:blur(10px);color:var(--muted);font-size:8px;line-height:1.55;pointer-events:auto}summary{cursor:pointer;color:rgba(238,249,244,.77);letter-spacing:.08em;text-transform:uppercase}details p{margin:7px 0 1px}code{font-family:inherit;color:#fff}input[type=file]{display:none}
 @media(max-width:760px){.deck{top:57px;width:253px;max-height:calc(100vh - 190px)}.brand{left:11px;top:9px}.brand b{font-size:11px}.status{right:11px;top:9px}.bottom{bottom:9px}.controls{gap:5px;padding:7px}.controls button{font-size:7px;padding:7px 7px}.controls .audio{flex:1 1 30%}.controls .mutate{flex:1 1 40%}details{display:none}}
 </style>
@@ -26,21 +26,30 @@ details{position:absolute;right:15px;bottom:95px;width:min(400px,calc(100vw - 30
 <body>
 <canvas id="stage"></canvas>
 <div class="hud">
-  <div class="brand"><b>Listening Pedestal: Signal Garden</b>kaleidoscopic parallax glyph ecology / seed <span id="seed">000000</span></div>
-  <div class="status"><b id="paletteReadout">Prism</b><br><span id="signalReadout">autonomous field</span><br><span id="autoReadout">evolution dormant</span></div>
+  <div class="brand"><b>Listening Pedestal: Signal Garden</b>adaptive kaleidoscopic glyph ecology / seed <span id="seed">000000</span></div>
+  <div class="status"><b id="paletteReadout">Prism</b><br><span id="signalReadout">autonomous field</span><br><span id="autoReadout">evolution dormant</span><br><span id="perfReadout">adaptive quality / warm</span></div>
   <aside id="deck" class="deck">
-    <div class="deckHead"><span class="deckTitle">Layer + Evolution Deck</span><button id="hideDeck" class="small">Hide</button></div>
-    <div class="section"><div class="sectionLabel">Independent visual layers</div><div class="layers">
-      <button class="layer active" data-layer="mesh">3D mesh cells</button><button class="layer active" data-layer="tethers">Tension ligaments</button>
-      <button class="layer" data-layer="membrane">Soft membrane</button><button class="layer active" data-layer="splines">Filled splines</button>
-      <button class="layer active" data-layer="mirror">Mirror ink</button><button class="layer active" data-layer="particles">Particle weather</button>
-      <button class="layer active" data-layer="symbols">Unicode relics</button><button class="layer" data-layer="life">Conway lattice</button>
-      <button class="layer active" data-layer="rings">Radial spirals</button><button class="layer active" data-layer="eq">EQ scope</button>
-      <button class="layer" data-layer="grid">Coordinate grid</button><button class="layer" data-layer="pointer">Pointer vortex</button>
+    <div class="deckHead"><span class="deckTitle">Layer Stack + Evolution Deck · drive tunnel / user stack / adaptive guardrails</span><button id="hideDeck" class="small">Hide</button></div>
+    <div class="section"><div class="sectionLabel">Independent visual layers · drag to reorder (top = drawn last)</div>
+      <div class="manuals" style="margin:0 0 7px"><button id="safeProfile">Performance rescue</button></div>
+      <div class="layers" id="layerStack">
+      <button class="layer active" draggable="true" data-layer="mesh">3D mesh cells</button><button class="layer active" draggable="true" data-layer="tethers">Tension ligaments</button>
+      <button class="layer" draggable="true" data-layer="membrane">Soft membrane</button><button class="layer active" draggable="true" data-layer="splines">Filled splines</button>
+      <button class="layer active" draggable="true" data-layer="mirror">Mirror ink</button><button class="layer active" draggable="true" data-layer="particles">Particle weather</button>
+      <button class="layer active" draggable="true" data-layer="symbols">Unicode relics</button><button class="layer" draggable="true" data-layer="life">Conway lattice</button>
+      <button class="layer active" draggable="true" data-layer="rings">Radial spirals</button>
+      <button class="layer" draggable="true" data-layer="helix">Helix ribbons</button><button class="layer" draggable="true" data-layer="branches">Forking growth</button>
+      <button class="layer" draggable="true" data-layer="maze">Maze walkers</button>
+      <button class="layer" draggable="true" data-layer="tunnel">Drive tunnel</button><button class="layer" draggable="true" data-layer="stripes">Phase stripes</button>
+      <button class="layer active" draggable="true" data-layer="eq">EQ scope</button>
+      <button class="layer" draggable="true" data-layer="grid">Coordinate grid</button><button class="layer" draggable="true" data-layer="pointer">Pointer vortex</button>
     </div></div>
     <div class="section"><div class="sectionLabel">Kaleidoscope / palette</div>
       <label class="route"><span>Symmetry</span><select id="symmetry"></select></label>
       <label class="route"><span>Reflection</span><select id="reflection"><option value="true">Mirror alternate</option><option value="false">Rotational only</option></select></label>
+      <div class="rangeRow"><span>Scene rotation</span><input id="sceneRotation" type="range" min="0" max="360" step="1" value="0"></div>
+      <div class="rangeRow"><span>Turn rate</span><input id="rotationSpeed" type="range" min="-.35" max=".35" step=".005" value=".00"></div>
+      <div class="rangeRow"><span>Water warble</span><input id="warble" type="range" min="0" max="1.2" step=".02" value=".12"></div>
       <label class="route"><span>Color profile</span><select id="paletteSelect"></select></label>
       <div class="rangeRow"><span>Hue drift</span><input id="hueDrift" type="range" min="0" max="2" step=".02" value=".45"></div>
       <div class="rangeRow"><span>Intensity</span><input id="intensity" type="range" min=".25" max="2.3" step=".05" value="1"></div>
@@ -67,75 +76,707 @@ details{position:absolute;right:15px;bottom:95px;width:min(400px,calc(100vw - 30
       <label class="check"><input id="autoDensity" type="checkbox" checked> Vary cell density</label>
       <label class="check"><input id="autoResponse" type="checkbox" checked> Vary response</label>
       <label class="check"><input id="autoMotion" type="checkbox" checked> Vary field motion</label>
+      <label class="check"><input id="autoOrder" type="checkbox" checked> Reorder layer stack</label>
+      <label class="check"><input id="autoRotation" type="checkbox" checked> Vary scene rotation</label>
+      <label class="check"><input id="autoWarble" type="checkbox"> Rare unified warble</label>
+      <label class="check"><input id="autoLifeRule" type="checkbox"> Vary automaton rule</label>
       <div class="manuals"><button id="shuffleAll">Shuffle all</button><button id="shuffleLayers">Layers</button><button id="shufflePatches">Patches</button></div>
     </div>
-    <div class="section"><div class="sectionLabel">Matter density</div><div class="rangeRow"><span>Cell count</span><input id="cellCount" type="range" min="2" max="10" step="1" value="6"></div><div class="rangeRow"><span>Response</span><input id="response" type="range" min=".2" max="3" step=".05" value="1.15"></div></div>
+    <div class="section">
+      <div class="sectionLabel">Incremental drift · one parameter at a time</div>
+      <label class="check"><input id="microEnable" type="checkbox"> Micro-wander</label>
+      <div class="rangeRow"><span>Drift cadence</span><input id="microCadence" type="range" min="2" max="24" step=".5" value="7"></div>
+      <div class="manuals"><button id="microNudge">Nudge one parameter</button></div>
+      <div id="microReadout" style="margin-top:7px;color:rgba(238,249,244,.48);font-size:8px;letter-spacing:.07em;text-transform:uppercase">Micro-wander dormant</div>
+    </div>
+    <div class="section"><div class="sectionLabel">Matter + automaton</div><div class="rangeRow"><span>Cell count</span><input id="cellCount" type="range" min="1" max="6" step="1" value="4"></div><div class="rangeRow"><span>Response</span><input id="response" type="range" min=".2" max="2.2" step=".05" value="1.05"></div><label class="route"><span>Life rule</span><select id="lifeRule"></select></label></div>
+    <div class="section"><div class="sectionLabel">Profile lab · store test outcomes</div><div class="manuals"><button id="flagChug">Flag chug</button><button id="flagBroken">Flag broken</button><button id="flagBeautiful">Flag beautiful</button><button id="exportReport">Export report</button><button id="exportAnnotated">Annotated HTML</button><button id="clearReport">Clear log</button></div><div id="diagnosticCount" style="margin-top:7px;color:rgba(238,249,244,.48);font-size:8px;letter-spacing:.07em;text-transform:uppercase">No profile notes stored</div></div>
   </aside>
-  <div id="notice" class="notice"></div>
   <details><summary>Audio / true 3D note</summary><p><b>Listen to Tab</b> can capture Spotify Web Player only after you explicitly select its browser tab and enable <b>Share tab audio</b>. The central cells here are real low-poly 3D meshes rendered from moving 3D vertices. They gravitationally approach and their vertices stretch toward nearby cells; this is deformation, not a topology-changing boolean union. A true unified 3D mesh fusion is a dedicated next pass—best done with a WebGL SDF/marching-cubes renderer rather than pretending a 2D fill is the same thing.</p></details>
   <div class="bottom"><div class="hint">Hold pointer only when <b>pointer vortex</b> is enabled · <b>M</b> mutate · <b>space</b> injects energy · symmetry duplicates a living source sector into the whole scene</div><div class="controls"><button id="mutate" class="mutate">M Mutate Garden</button><button id="tabAudio" class="audio">Listen to Tab</button><button id="micAudio" class="audio">Use Microphone</button><button id="fileAudio" class="audio">Play Audio File</button><button id="stopAudio" class="audio">Stop Audio</button><input id="audioFile" type="file" accept="audio/*"></div></div>
 </div>
 <script>
 (()=>{"use strict";
 const canvas=document.getElementById("stage"),ctx=canvas.getContext("2d",{alpha:false}),$=id=>document.getElementById(id);
-const seedText=$("seed"),paletteReadout=$("paletteReadout"),signalReadout=$("signalReadout"),autoReadout=$("autoReadout"),notice=$("notice");
-let W=0,H=0,DPR=1,last=performance.now(),time=0,seed=(Math.random()*0xffffffff)>>>0,cellCount=6,response=1.15,intensity=1,hueDrift=.45,symmetry=6,reflection=true,frameReach=1.22,layerSpread=.34,motionField=.62,pulse=0;
-let garden=null,life=null,lifeClock=0,autoClock=0,lastAuto=-99,lastEnergy=0,history=Array.from({length:90},()=>0),noticeTimer=0;
+const seedText=$("seed"),paletteReadout=$("paletteReadout"),signalReadout=$("signalReadout"),autoReadout=$("autoReadout"),perfReadout=$("perfReadout"),notice=$("notice");
+let W=0,H=0,DPR=1,last=performance.now(),time=0,seed=(Math.random()*0xffffffff)>>>0,cellCount=4,response=1.05,intensity=1,hueDrift=.45,symmetry=6,reflection=true,frameReach=1.22,layerSpread=.34,motionField=.62,sceneRotation=0,rotationSpeed=0,warble=.035,lifeRule="conway",pulse=0,frameMS=16.7,qualityTier=0,qualityCandidate=0,qualityCandidateSince=0,lastQualityChange=-99,diagnosticLog=[];
+let garden=null,life=null,lifeClock=0,autoClock=0,lastAuto=-99,lastEnergy=0,history=Array.from({length:90},()=>0);let splineCache={at:-1,key:"",policy:null,paths:[]};
 let fieldCanvas=document.createElement("canvas"),fieldCtx=fieldCanvas.getContext("2d",{alpha:true}),fieldImage=null,fieldW=0,fieldH=0,trailCanvas=document.createElement("canvas"),trailCtx=trailCanvas.getContext("2d",{alpha:true});
 let pointer={x:.5,y:.5,down:false,active:false};
-const layers={mesh:true,tethers:true,membrane:false,splines:true,mirror:true,particles:true,symbols:true,life:false,rings:true,eq:true,grid:false,pointer:false};
+const layers={mesh:true,tethers:true,membrane:false,splines:true,mirror:true,particles:true,symbols:true,life:false,rings:true,helix:false,branches:false,maze:false,tunnel:false,stripes:false,eq:true,grid:false,pointer:false};
+let layerOrder=["mesh","tethers","membrane","splines","mirror","particles","symbols","life","rings","helix","branches","maze","tunnel","stripes"];
 const bandNames=["sub","bass","lowMid","mid","highMid","air"],bandLabels={sub:"SUB",bass:"BASS",lowMid:"LOW-MID",mid:"MID",highMid:"HIGH-MID",air:"AIR"};
 const bands={sub:.03,bass:.04,lowMid:.03,mid:.04,highMid:.03,air:.02},raw={...bands};let longSpectrum={...bands},lastBandSnapshot={...bands},spectralFlux=0,spectralShift=0;
 const routes={mass:"bass",gravity:"sub",deform:"lowMid",hue:"highMid",splines:"mid",particles:"lowMid",symbols:"air",life:"bass",evolution:"mid"};
-let auto={on:false,mode:"timer",cadence:24,layers:true,patches:true,palette:true,symmetry:true,morph:true,density:true,response:true,motion:true};
+let auto={on:false,mode:"timer",cadence:24,layers:true,patches:true,palette:true,symmetry:true,morph:true,density:true,response:true,motion:true,order:true,rotation:true,warble:false,lifeRule:false};
+// Micro-wander is a gentle one-parameter random walk. Its seed is born with this
+// page session and receives extra entropy from later clicks and control changes.
+const sessionSeed=(()=>{
+  let n=(Date.now() ^ Math.floor(performance.timeOrigin||0) ^ ((Math.random()*0xffffffff)>>>0))>>>0;
+  try{const a=new Uint32Array(1);crypto.getRandomValues(a);n^=a[0]}catch(_){}
+  return n||0x6D2B79F5;
+})();
+let micro={on:false,cadence:7,last:-99,step:0,state:sessionSeed,entropy:sessionSeed^0x9E3779B9,recent:[],lastLabel:"awaiting first drift"};
 const palettes={prism:{name:"Prism",kind:"rainbow",base:[88,222,255],accent:[255,111,223],deep:[4,17,35],shadow:[1,3,10]},aurora:{name:"Aurora",kind:"fixed",base:[61,243,197],accent:[151,126,255],deep:[3,35,35],shadow:[1,7,12]},acid:{name:"Acid",kind:"fixed",base:[205,255,66],accent:[38,229,255],deep:[22,45,4],shadow:[3,9,2]},ember:{name:"Ember",kind:"fixed",base:[255,88,63],accent:[255,207,65],deep:[54,6,3],shadow:[12,1,1]},candy:{name:"Candy",kind:"fixed",base:[255,90,185],accent:[147,223,255],deep:[42,3,27],shadow:[9,1,7]},radio:{name:"Radio",kind:"mono",base:[145,255,111],accent:[226,255,190],deep:[8,37,9],shadow:[1,8,2]},mono:{name:"Monochrome",kind:"mono",base:[211,226,224],accent:[255,255,255],deep:[13,18,21],shadow:[2,3,4]}};
 let paletteKey="prism",palette=palettes[paletteKey];
+const lifeRules={conway:{name:"Conway B3/S23",birth:[3],survive:[2,3]},highlife:{name:"HighLife B36/S23",birth:[3,6],survive:[2,3]},maze:{name:"Maze B3/S12345",birth:[3],survive:[1,2,3,4,5]},coral:{name:"Coral B3/S45678",birth:[3],survive:[4,5,6,7,8]},seeds:{name:"Seeds B2/S",birth:[2],survive:[]}};
 const glyphs=["◌","◍","◎","◉","◈","◇","◆","△","▽","◐","◑","☍","☌","☿","♆","♄","✶","✷","✹","✺","✦","✧","⊹","⟡","⨳","⌁","⌂","⌘","⌬","⧖","⧗","⧉","⫷","⫸","∿","≋","∞","∴","∵","≜","≈","⊙","⊚","⊛","☯","☊","☋","♢","♧","♤","♡","♜","♞","⚚","⚘","⚛","⚝","⚭","⚯","⟁","⧚","⧜","⩕","⩗","⩘","╳","╬","╱","╲","▧","▨"];
-function clamp(v,a,b){return Math.max(a,Math.min(b,v))}function lerp(a,b,u){return a+(b-a)*u}function mix(a,b,u){return[a[0]+(b[0]-a[0])*u,a[1]+(b[1]-a[1])*u,a[2]+(b[2]-a[2])*u]}function rgb(c,a=1){return`rgba(${c.map(x=>Math.round(clamp(x,0,255))).join(",")},${a})`}function hsl(h,s,l){h=(h%1+1)%1;const c=(1-Math.abs(2*l-1))*s,x=c*(1-Math.abs((h*6)%2-1)),m=l-c/2;let r=0,g=0,b=0;if(h<1/6)[r,g,b]=[c,x,0];else if(h<2/6)[r,g,b]=[x,c,0];else if(h<3/6)[r,g,b]=[0,c,x];else if(h<4/6)[r,g,b]=[0,x,c];else if(h<5/6)[r,g,b]=[x,0,c];else[r,g,b]=[c,0,x];return[(r+m)*255,(g+m)*255,(b+m)*255]}function dot(a,b){return a.x*b.x+a.y*b.y+a.z*b.z}function cross(a,b){return{x:a.y*b.z-a.z*b.y,y:a.z*b.x-a.x*b.z,z:a.x*b.y-a.y*b.x}}function norm(a){const d=Math.hypot(a.x,a.y,a.z)||1;return{x:a.x/d,y:a.y/d,z:a.z/d}}function rotY(p,a){const c=Math.cos(a),s=Math.sin(a);return{x:p.x*c+p.z*s,y:p.y,z:-p.x*s+p.z*c}}function rotX(p,a){const c=Math.cos(a),s=Math.sin(a);return{x:p.x,y:p.y*c-p.z*s,z:p.y*s+p.z*c}}function rngFactory(s){return()=>{let x=s+=0x6D2B79F5;x=Math.imul(x^x>>>15,x|1);x^=x+Math.imul(x^x>>>7,x|61);return((x^x>>>14)>>>0)/4294967296}}function ctrl(k){return clamp(bands[routes[k]]*response,0,2.5)}function show(text,ms=3200){notice.textContent=text;notice.classList.add("show");clearTimeout(noticeTimer);noticeTimer=setTimeout(()=>notice.classList.remove("show"),ms)}
+function clamp(v,a,b){return Math.max(a,Math.min(b,v))}function lerp(a,b,u){return a+(b-a)*u}function mix(a,b,u){return[a[0]+(b[0]-a[0])*u,a[1]+(b[1]-a[1])*u,a[2]+(b[2]-a[2])*u]}function rgb(c,a=1){return`rgba(${c.map(x=>Math.round(clamp(x,0,255))).join(",")},${a})`}function hsl(h,s,l){h=(h%1+1)%1;const c=(1-Math.abs(2*l-1))*s,x=c*(1-Math.abs((h*6)%2-1)),m=l-c/2;let r=0,g=0,b=0;if(h<1/6)[r,g,b]=[c,x,0];else if(h<2/6)[r,g,b]=[x,c,0];else if(h<3/6)[r,g,b]=[0,c,x];else if(h<4/6)[r,g,b]=[0,x,c];else if(h<5/6)[r,g,b]=[x,0,c];else[r,g,b]=[c,0,x];return[(r+m)*255,(g+m)*255,(b+m)*255]}function dot(a,b){return a.x*b.x+a.y*b.y+a.z*b.z}function cross(a,b){return{x:a.y*b.z-a.z*b.y,y:a.z*b.x-a.x*b.z,z:a.x*b.y-a.y*b.x}}function norm(a){const d=Math.hypot(a.x,a.y,a.z)||1;return{x:a.x/d,y:a.y/d,z:a.z/d}}function rotY(p,a){const c=Math.cos(a),s=Math.sin(a);return{x:p.x*c+p.z*s,y:p.y,z:-p.x*s+p.z*c}}function rotX(p,a){const c=Math.cos(a),s=Math.sin(a);return{x:p.x,y:p.y*c-p.z*s,z:p.y*s+p.z*c}}function rngFactory(s){return()=>{let x=s+=0x6D2B79F5;x=Math.imul(x^x>>>15,x|1);x^=x+Math.imul(x^x>>>7,x|61);return((x^x>>>14)>>>0)/4294967296}}function ctrl(k){return clamp(bands[routes[k]]*response,0,2.5)}function show(text, ms=0){ /* Notifications intentionally disabled: status remains non-intrusive. */ }
+const DIAG_KEY="signal-garden-v7-diagnostics";
+function loadDiagnostics(){try{const data=JSON.parse(localStorage.getItem(DIAG_KEY)||"[]");return Array.isArray(data)?data:[]}catch(_){return[]}}
+function saveDiagnostics(){try{localStorage.setItem(DIAG_KEY,JSON.stringify(diagnosticLog.slice(-80)))}catch(_){}}
+function activeLayerList(){return layerOrder.filter(k=>layers[k])}
+function profileSnapshot(kind="note"){return{version:"Signal Garden v15 Drive Tunnel",kind,at:new Date().toISOString(),seed,symmetry,reflection,cellCount,visibleCells:nodeBudget(),activeLayers:activeLayerList(),layerOrder:[...layerOrder],palette:paletteKey,rotationDegrees:Math.round(sceneRotation*180/Math.PI),turnRate:rotationSpeed,warble,response,frameReach,layerSpread,motionField,qualityTier,frameMS:Math.round(frameMS*10)/10,fps:Math.round(1000/Math.max(frameMS,1)),routes:{...routes},lifeRule,automation:{...auto}}}
+function updateDiagnosticCount(){const el=$("diagnosticCount");if(el)el.textContent=diagnosticLog.length?`${diagnosticLog.length} saved profile note${diagnosticLog.length===1?"":"s"} · export a report when ready`:"No profile notes stored"}
+function recordDiagnostic(kind){diagnosticLog.push(profileSnapshot(kind));saveDiagnostics();updateDiagnosticCount();show(kind==="chug"?"Current profile flagged: chug.":kind==="broken"?"Current profile flagged: structurally broken.":"Current profile marked: beautiful.",1800)}
+function downloadBlob(name,content,type){const blob=new Blob([content],{type}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1200)}
+function exportDiagnostics(asHTML=false){const payload={exportedAt:new Date().toISOString(),app:"Signal Garden v15 Drive Tunnel",profiles:diagnosticLog,current:profileSnapshot("current")};if(asHTML){const safe=JSON.stringify(payload).replace(/</g,"\\u003c");const tagOpen="<scr"+"ipt id=\\\"signal-garden-diagnostics\\\" type=\\\"application/json\\\">",tagClose="</scr"+"ipt>";const copy='<!doctype html>\n'+document.documentElement.outerHTML.replace("</body>",tagOpen+safe+tagClose+"</body>");downloadBlob("Signal_Garden_v7_Annotated_Diagnostics.html",copy,"text/html");show("Annotated HTML exported. Upload that file or the JSON report next time.",2400)}else{downloadBlob("Signal_Garden_v7_Profile_Report.json",JSON.stringify(payload,null,2),"application/json");show("Profile report exported.",1600)}}
+function updatePerformance(ms){
+  // Deliberately slow smoothing plus hysteresis prevents the quality system from
+  // bouncing between tiers when a single heavy frame briefly crosses a threshold.
+  frameMS=lerp(frameMS,ms,.045);
+
+  let desired=qualityTier;
+  if(qualityTier===0){
+    if(frameMS>39) desired=1;
+  }else if(qualityTier===1){
+    if(frameMS>57) desired=2;
+    else if(frameMS<23) desired=0;
+  }else{
+    if(frameMS<33) desired=1;
+  }
+
+  if(desired!==qualityTier){
+    if(desired!==qualityCandidate){
+      qualityCandidate=desired;
+      qualityCandidateSince=time;
+    }
+    // Quality can step down after a sustained burden; it only restores after a
+    // longer calm period. This is the "sponge" around the threshold.
+    const hold=desired>qualityTier?.95:3.20;
+    const cooldown=2.40;
+    if(time-qualityCandidateSince>hold && time-lastQualityChange>cooldown){
+      qualityTier=desired;
+      lastQualityChange=time;
+      qualityCandidate=qualityTier;
+      qualityCandidateSince=time;
+      resize();
+      show(
+        qualityTier===2
+          ?"Adaptive quality: emergency thinning held after sustained load."
+          :qualityTier===1
+            ?"Adaptive quality: stable light thinning engaged."
+            :"Adaptive quality: sustained recovery restored full detail.",
+        1900
+      );
+    }
+  }else{
+    qualityCandidate=qualityTier;
+    qualityCandidateSince=time;
+  }
+
+  const label=qualityTier===2?"emergency thin":qualityTier===1?"adaptive thin":"full detail";
+  perfReadout.textContent=`${Math.round(1000/Math.max(frameMS,1))} fps / ${label}`;
+}
+diagnosticLog=loadDiagnostics();
+
 function color(node,variant=0){const h=ctrl("hue");if(palette.kind==="rainbow")return hsl(node.hue+time*hueDrift*.03+h*.095+variant*.04,.82,.49+.10*Math.sin(time*.8+node.phase));if(palette.kind==="mono")return mix(palette.base,palette.accent,.18+.55*node.tone+variant*.12);return mix(palette.base,palette.accent,clamp(node.tone+.14*Math.sin(time*.6+node.phase)+h*.13+variant*.1,0,1))}
-function resize(){W=innerWidth;H=innerHeight;DPR=Math.min(devicePixelRatio||1,2);canvas.width=Math.floor(W*DPR);canvas.height=Math.floor(H*DPR);canvas.style.width=W+"px";canvas.style.height=H+"px";ctx.setTransform(DPR,0,0,DPR,0,0);const quality=Math.sqrt(Math.max(1,symmetry/5)),trailScale=Math.max(.36,.76/quality);trailCanvas.width=Math.max(1,Math.floor(W*trailScale));trailCanvas.height=Math.max(1,Math.floor(H*trailScale));trailCtx.clearRect(0,0,trailCanvas.width,trailCanvas.height);fieldW=clamp(Math.floor(Math.sqrt(W*H)/(6*quality)),92,190);fieldH=Math.max(62,Math.floor(fieldW*H/W));fieldCanvas.width=fieldW;fieldCanvas.height=fieldH;fieldImage=fieldCtx.createImageData(fieldW,fieldH)}window.addEventListener("resize",resize);
+function resize(){W=innerWidth;H=innerHeight;DPR=Math.min(devicePixelRatio||1,2);canvas.width=Math.floor(W*DPR);canvas.height=Math.floor(H*DPR);canvas.style.width=W+"px";canvas.style.height=H+"px";ctx.setTransform(DPR,0,0,DPR,0,0);const adaptive=qualityTier===2?1.90:qualityTier===1?1.35:1,quality=Math.sqrt(Math.max(1,symmetry/4))*adaptive,trailScale=Math.max(.22,.72/quality);trailCanvas.width=Math.max(1,Math.floor(W*trailScale));trailCanvas.height=Math.max(1,Math.floor(H*trailScale));trailCtx.clearRect(0,0,trailCanvas.width,trailCanvas.height);fieldW=clamp(Math.floor(Math.sqrt(W*H)/(6.4*quality)),68,172);fieldH=Math.max(48,Math.floor(fieldW*H/W));fieldCanvas.width=fieldW;fieldCanvas.height=fieldH;fieldImage=fieldCtx.createImageData(fieldW,fieldH)}window.addEventListener("resize",resize);
 function latLongMesh(rings=5,sides=8){const verts=[],faces=[];for(let r=0;r<=rings;r++){const v=r/rings,phi=v*Math.PI;for(let s=0;s<sides;s++){const a=s/sides*Math.PI*2;verts.push({x:Math.sin(phi)*Math.cos(a),y:Math.cos(phi),z:Math.sin(phi)*Math.sin(a)})}}for(let r=0;r<rings;r++)for(let s=0;s<sides;s++){const a=r*sides+s,b=r*sides+(s+1)%sides,c=(r+1)*sides+(s+1)%sides,d=(r+1)*sides+s;faces.push([a,b,d],[b,c,d])}return{verts,faces}}
 const mesh=latLongMesh();
 function makeNode(rng,i,n){const a=(i+.22)/n*Math.PI*2,shell=.26+rng()*.78;return{x:.20+Math.abs(Math.cos(a))*shell+rng()*.18,y:Math.sin(a)*(.18+rng()*.46)+(rng()-.5)*.24,z:(rng()-.5)*.82,vx:(rng()-.5)*.005,vy:(rng()-.5)*.005,vz:(rng()-.5)*.005,r:.24+rng()*.17,baseR:0,phase:rng()*6.28,rate:.32+rng()*1.30,hue:rng(),tone:rng(),spin:(rng()-.5)*.9,texture:rng()}}
 function makeLife(rng){const cols=80,rows=46,cur=new Uint8Array(cols*rows),next=new Uint8Array(cols*rows);for(let y=0;y<rows;y++)for(let x=0;x<cols;x++){const dx=x/cols-.5,dy=y/rows-.5;if(Math.hypot(dx,dy)<.42&&rng()<.115)cur[y*cols+x]=1}return{cols,rows,cur,next,rng}}
-function makeGarden(nextSeed){seed=nextSeed>>>0;seedText.textContent=String(seed).padStart(9,"0").slice(-6);const rng=rngFactory(seed),nodes=Array.from({length:cellCount},(_,i)=>makeNode(rng,i,cellCount));nodes.forEach(n=>n.baseR=n.r);const particles=Array.from({length:270},()=>({x:-.12+rng()*2.85,y:(rng()-.5)*2.42,z:(rng()-.5)*.82,px:0,py:0,pz:0,vx:(rng()-.5)*.006,vy:(rng()-.5)*.006,vz:(rng()-.5)*.006,phase:rng()*6.28,size:.5+rng()*2.3,flavor:rng()}));const symbols=Array.from({length:185},()=>({x:-.18+rng()*2.98,y:(rng()-.5)*2.52,z:(rng()-.5)*.70,phase:rng()*6.28,rate:.25+rng()*1.55,size:44+rng()*142,vx:(rng()-.5)*.0011,vy:(rng()-.5)*.0011,flavor:rng(),glyph:glyphs[Math.floor(rng()*glyphs.length)]}));const splines=Array.from({length:10},(_,i)=>({phase:rng()*6.28,rate:.24+rng()*1.28,rad:.16+rng()*.52,amp:.12+rng()*.25,shape:Math.floor(rng()*4),flavor:rng()}));garden={nodes,particles,symbols,splines,rng};life=makeLife(rng);trailCtx.clearRect(0,0,trailCanvas.width,trailCanvas.height)}
+
+function makeBranchNetwork(rng){
+  const segments=[];
+  function branch(x,y,angle,length,depth,flavor,root){
+    if(depth>5||segments.length>174)return;
+    const x2=x+Math.cos(angle)*length;
+    const y2=y+Math.sin(angle)*length;
+    segments.push({x1:x,y1:y,x2,y2,depth,flavor,root,phase:rng()*6.28,rate:.35+rng()*1.15});
+    if(depth===5)return;
+    const children=depth<2?(rng()>.32?3:2):(rng()>.24?2:1);
+    for(let i=0;i<children;i++){
+      const lane=children===1?0:(i/(children-1)-.5);
+      const bend=lane*(.86+rng()*.42)+(rng()-.5)*.20;
+      branch(x2,y2,angle+bend,length*(.54+rng()*.13),depth+1,(flavor+rng()*.16)%1,root);
+    }
+  }
+  for(let root=0;root<3;root++){
+    branch(.02+rng()*.16,(root-1)*(.16+rng()*.12),(rng()-.5)*.94,.30+rng()*.15,0,rng(),root);
+  }
+  return segments;
+}
+function makeMazeWalk(rng){
+  const cols=17,rows=13,visited=new Uint8Array(cols*rows),stack=[],path=[];
+  let x=0,y=Math.floor(rng()*rows);
+  stack.push({x,y});visited[y*cols+x]=1;path.push({x,y});
+  const dirs=[[1,0],[-1,0],[0,1],[0,-1]];
+  while(stack.length){
+    const cur=stack[stack.length-1],choices=[];
+    for(const [dx,dy] of dirs){
+      const nx=cur.x+dx,ny=cur.y+dy;
+      if(nx>=0&&nx<cols&&ny>=0&&ny<rows&&!visited[ny*cols+nx])choices.push({x:nx,y:ny});
+    }
+    if(choices.length){
+      const next=choices[Math.floor(rng()*choices.length)];
+      visited[next.y*cols+next.x]=1;stack.push(next);path.push(next);
+    }else{
+      stack.pop();
+      if(stack.length)path.push(stack[stack.length-1]);
+    }
+  }
+  return {cols,rows,path,phase:rng()*6.28,rate:.28+rng()*.82,flavor:rng()};
+}
+function makeGarden(nextSeed){seed=nextSeed>>>0;seedText.textContent=String(seed).padStart(9,"0").slice(-6);const rng=rngFactory(seed),nodes=Array.from({length:cellCount},(_,i)=>makeNode(rng,i,cellCount));nodes.forEach(n=>n.baseR=n.r);const particles=Array.from({length:330},()=>({x:-.12+rng()*2.85,y:(rng()-.5)*2.42,z:(rng()-.5)*.82,px:0,py:0,pz:0,vx:(rng()-.5)*.006,vy:(rng()-.5)*.006,vz:(rng()-.5)*.006,phase:rng()*6.28,size:.5+rng()*2.3,flavor:rng()}));const symbols=Array.from({length:185},()=>({x:-.18+rng()*2.98,y:(rng()-.5)*2.52,z:(rng()-.5)*.70,phase:rng()*6.28,rate:.25+rng()*1.55,size:44+rng()*142,vx:(rng()-.5)*.0011,vy:(rng()-.5)*.0011,flavor:rng(),glyph:glyphs[Math.floor(rng()*glyphs.length)]}));const splines=Array.from({length:7},(_,i)=>({phase:rng()*6.28,rate:.24+rng()*1.28,rad:.16+rng()*.52,amp:.12+rng()*.25,shape:Math.floor(rng()*4),flavor:rng()}));garden={nodes,particles,symbols,splines,branches:makeBranchNetwork(rng),maze:makeMazeWalk(rng),rng};life=makeLife(rng);trailCtx.clearRect(0,0,trailCanvas.width,trailCanvas.height)}
 function updateAudio(){if(analyser){analyser.getByteFrequencyData(freqData);raw.sub=avgHz(20,60);raw.bass=avgHz(60,250);raw.lowMid=avgHz(250,500);raw.mid=avgHz(500,2000);raw.highMid=avgHz(2000,6000);raw.air=avgHz(6000,14500)}else{raw.sub=.022+.027*(.5+.5*Math.sin(time*.62));raw.bass=.035+.038*(.5+.5*Math.sin(time*.91+1.1));raw.lowMid=.025+.03*(.5+.5*Math.sin(time*.72+2.4));raw.mid=.029+.034*(.5+.5*Math.sin(time*1.14+.7));raw.highMid=.019+.027*(.5+.5*Math.sin(time*1.71+2.4));raw.air=.018+.022*(.5+.5*Math.sin(time*2.31+3.1))}let flux=0,shift=0;for(const k of bandNames){bands[k]=lerp(bands[k],raw[k],k==="sub"?.13:.19);flux+=Math.abs(bands[k]-lastBandSnapshot[k]);longSpectrum[k]=lerp(longSpectrum[k],bands[k],.006);shift+=Math.abs(bands[k]-longSpectrum[k]);lastBandSnapshot[k]=bands[k]}spectralFlux=lerp(spectralFlux,flux/bandNames.length,.32);spectralShift=lerp(spectralShift,shift/bandNames.length,.08);const e=(bands.sub+bands.bass+bands.lowMid+bands.mid+bands.highMid+bands.air)/6;history.push(e);if(history.length>90)history.shift();return{energy:e,flux:spectralFlux,shift:spectralShift}}
 let audioCtx=null,analyser=null,freqData=null,activeStream=null,mediaEl=null,mediaNode=null,audioSource="autonomous";function hzIndex(hz){return!analyser||!audioCtx?0:clamp(Math.round(hz/(audioCtx.sampleRate/2)*analyser.frequencyBinCount),0,analyser.frequencyBinCount-1)}function avgHz(a,b){const i0=hzIndex(a),i1=Math.max(i0+1,hzIndex(b));let s=0,n=0;for(let i=i0;i<=i1;i++){s+=freqData[i];n++}return n?s/n/255:0}async function ensureAudio(){if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();if(audioCtx.state==="suspended")await audioCtx.resume();if(!analyser){analyser=audioCtx.createAnalyser();analyser.fftSize=2048;analyser.smoothingTimeConstant=.52;freqData=new Uint8Array(analyser.frequencyBinCount)}}function syncAudio(){document.querySelectorAll(".audio").forEach(b=>b.classList.remove("live"));if(audioSource==="tab")$("tabAudio").classList.add("live");if(audioSource==="microphone")$("micAudio").classList.add("live");if(audioSource==="file")$("fileAudio").classList.add("live")}function stopAudio(){if(activeStream){activeStream.getTracks().forEach(t=>t.stop());activeStream=null}if(mediaEl){mediaEl.pause();try{URL.revokeObjectURL(mediaEl.src)}catch(_){}mediaEl.src="";mediaEl=null;mediaNode=null}analyser=null;freqData=null;audioSource="autonomous";signalReadout.textContent="autonomous field";syncAudio();show("External signal disconnected. Garden returned to its own metabolism.",1800)}async function attachStream(stream,label){stopAudio();await ensureAudio();if(!stream.getAudioTracks().length){stream.getTracks().forEach(t=>t.stop());throw new Error("No audio arrived. Select a tab and enable Share tab audio.")}activeStream=stream;audioCtx.createMediaStreamSource(stream).connect(analyser);audioSource=label;signalReadout.textContent=label+" spectrum";syncAudio();stream.getAudioTracks()[0].addEventListener("ended",()=>{if(activeStream===stream)stopAudio()},{once:true});show(label==="tab"?"Tab spectrum connected. The patch matrix is live.":"Microphone spectrum connected. The patch matrix is live.",2500)}async function listenTab(){try{if(!navigator.mediaDevices?.getDisplayMedia)throw new Error("Tab capture unavailable in this browser context.");show("Choose Spotify/browser tab and enable Share tab audio in Chrome’s picker.",5200);const stream=await navigator.mediaDevices.getDisplayMedia({video:true,audio:true});await attachStream(stream,"tab")}catch(err){show(err.message||"Tab capture cancelled.",4000)}}async function listenMic(){try{if(!navigator.mediaDevices?.getUserMedia)throw new Error("Microphone capture needs GitHub Pages or localhost.");const stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:false,autoGainControl:false}});await attachStream(stream,"microphone")}catch(err){show(err.message||"Microphone capture cancelled.",4000)}}async function listenFile(file){try{stopAudio();await ensureAudio();mediaEl=new Audio();mediaEl.loop=true;mediaEl.src=URL.createObjectURL(file);mediaNode=audioCtx.createMediaElementSource(mediaEl);mediaNode.connect(analyser);analyser.connect(audioCtx.destination);await mediaEl.play();audioSource="file";signalReadout.textContent="local file spectrum";syncAudio();show("Local audio is driving the spectral routes.",2200)}catch(err){show(err.message||"Could not play that file.",4000)}}
-function updateNodes(dt){const ns=garden.nodes,g=ctrl("gravity"),dform=ctrl("deform"),m=ctrl("mass"),field=motionField*(.24+.64*g),cx=.66+Math.sin(time*(.16+.05*g))*field*.88,cy=Math.cos(time*(.11+.03*g))*field*.43;for(const n of ns){const orbit=n.phase+time*(.28+n.rate*.22),rad=.16+.34*motionField+.16*Math.sin(time*.42+n.phase);const goalX=cx+Math.cos(orbit)*rad,goalY=cy+Math.sin(orbit*1.18)*rad*.70,goalZ=Math.sin(orbit*.74+time*.35)*(.18+.34*motionField);n.vx+=(goalX-n.x)*(.00062+.00125*g)*dt;n.vy+=(goalY-n.y)*(.00062+.00118*g)*dt;n.vz+=(goalZ-n.z)*(.00052+.00105*g)*dt;if(layers.pointer&&pointer.active&&pointer.down){const dx=pointer.x-.5-n.x*.28,dy=pointer.y-.5-n.y*.38,dd=dx*dx+dy*dy+.008;n.vx+=dx*(.00036+.0009*g)/dd*dt;n.vy+=dy*(.00036+.0009*g)/dd*dt}}for(let i=0;i<ns.length;i++)for(let j=i+1;j<ns.length;j++){const a=ns[i],b=ns[j],dx=b.x-a.x,dy=b.y-a.y,dz=b.z-a.z,dist=Math.hypot(dx,dy,dz)+.0001,ux=dx/dist,uy=dy/dist,uz=dz/dist,min=(a.r+b.r)*.88,att=(.000010+.000085*g)*(1+m*.19),rep=dist<min?(min-dist)*(.0015+.0025*dform):0,f=att-rep;a.vx+=ux*f*dt;a.vy+=uy*f*dt;a.vz+=uz*f*dt;b.vx-=ux*f*dt;b.vy-=uy*f*dt;b.vz-=uz*f*dt}for(const n of ns){n.r=lerp(n.r,n.baseR*(1+.18*m+.055*Math.sin(time*n.rate+n.phase)+pulse*.10),.10);n.vx*=.975;n.vy*=.975;n.vz*=.975;n.x=clamp(n.x+n.vx*dt,-.30,2.42);n.y=clamp(n.y+n.vy*dt,-1.05,1.05);n.z=clamp(n.z+n.vz*dt,-1.15,1.15)}}
+function updateNodes(dt){
+  const ns=activeNodes(),g=ctrl("gravity"),dform=ctrl("deform"),m=ctrl("mass");
+  const wander=motionField*(.42+.72*g),cx=.52+Math.sin(time*(.17+.04*g))*wander*1.34+Math.cos(time*.071)*wander*.36,cy=Math.cos(time*(.12+.035*g))*wander*.62+Math.sin(time*.09)*wander*.16;
+  for(const n of ns){
+    const orbit=n.phase+time*(.22+n.rate*.29),rad=.10+.45*motionField+.24*Math.sin(time*.37+n.phase),goalX=cx+Math.cos(orbit)*rad,goalY=cy+Math.sin(orbit*1.20)*rad*.76,goalZ=Math.sin(orbit*.74+time*.43)*(.16+.48*motionField);
+    n.vx+=(goalX-n.x)*(.00046+.00145*g)*dt;n.vy+=(goalY-n.y)*(.00046+.00135*g)*dt;n.vz+=(goalZ-n.z)*(.00042+.00115*g)*dt;
+    if(layers.pointer&&pointer.active&&pointer.down){const dx=pointer.x-.5-n.x*.28,dy=pointer.y-.5-n.y*.38,dd=dx*dx+dy*dy+.008;n.vx+=dx*(.00025+.0008*g)/dd*dt;n.vy+=dy*(.00025+.0008*g)/dd*dt}
+  }
+  for(let i=0;i<ns.length;i++)for(let j=i+1;j<ns.length;j++){
+    const a=ns[i],b=ns[j],dx=b.x-a.x,dy=b.y-a.y,dz=b.z-a.z,dist=Math.hypot(dx,dy,dz)+.0001,ux=dx/dist,uy=dy/dist,uz=dz/dist,min=(a.r+b.r)*.80,att=(.000006+.000052*g)*(1+m*.15),rep=dist<min?(min-dist)*(.00125+.0020*dform):0,f=att-rep;
+    a.vx+=ux*f*dt;a.vy+=uy*f*dt;a.vz+=uz*f*dt;b.vx-=ux*f*dt;b.vy-=uy*f*dt;b.vz-=uz*f*dt;
+  }
+  for(const n of ns){n.r=lerp(n.r,n.baseR*(1+.16*m+.05*Math.sin(time*n.rate+n.phase)+pulse*.09),.10);n.vx*=.974;n.vy*=.974;n.vz*=.974;n.x=clamp(n.x+n.vx*dt,-.52,2.75);n.y=clamp(n.y+n.vy*dt,-1.38,1.38);n.z=clamp(n.z+n.vz*dt,-1.20,1.20)}
+}
 function project3(p){const cam=4.4,scale=Math.min(W,H)*.86*frameReach,den=cam-p.z;return{x:p.x*scale/den,y:-p.y*scale/den,z:den,k:scale/den}}
-function transformVertex(v,node){let p={x:v.x*node.r,y:v.y*node.r,z:v.z*node.r},stretch=0,dform=ctrl("deform");for(const other of garden.nodes){if(other===node)continue;const dx=other.x-node.x,dy=other.y-node.y,dz=other.z-node.z,dist=Math.hypot(dx,dy,dz)+.0001,reach=(node.r+other.r)*1.95;if(dist<reach){const dir={x:dx/dist,y:dy/dist,z:dz/dist},f=Math.max(0,v.x*dir.x+v.y*dir.y+v.z*dir.z);stretch+=((reach-dist)/reach)*f*f*dform*.48}}const wob=.035*Math.sin(v.x*4+v.y*5+time*node.rate+node.phase);p.x*=1+stretch+wob;p.y*=1+stretch*.75-wob*.4;p.z*=1+stretch+wob*.4;p=rotY(p,time*node.spin*.18);return{x:p.x+node.x,y:p.y+node.y,z:p.z+node.z}}
+function transformVertex(v,node){let p={x:v.x*node.r,y:v.y*node.r,z:v.z*node.r},stretch=0,dform=ctrl("deform");for(const other of activeNodes()){if(other===node)continue;const dx=other.x-node.x,dy=other.y-node.y,dz=other.z-node.z,dist=Math.hypot(dx,dy,dz)+.0001,reach=(node.r+other.r)*1.95;if(dist<reach){const dir={x:dx/dist,y:dy/dist,z:dz/dist},f=Math.max(0,v.x*dir.x+v.y*dir.y+v.z*dir.z);stretch+=((reach-dist)/reach)*f*f*dform*.48}}const wob=.035*Math.sin(v.x*4+v.y*5+time*node.rate+node.phase);p.x*=1+stretch+wob;p.y*=1+stretch*.75-wob*.4;p.z*=1+stretch+wob*.4;p=rotY(p,time*node.spin*.18);return{x:p.x+node.x,y:p.y+node.y,z:p.z+node.z}}
 function drawMeshSector(){if(!layers.mesh)return;const faces=[],light=norm({x:-.45,y:.7,z:.75});for(const node of garden.nodes){const pv=mesh.verts.map(v=>{const p=transformVertex(v,node);return{p,q:project3(p)}});for(const f of mesh.faces){const A=pv[f[0]],B=pv[f[1]],C=pv[f[2]],ab={x:B.p.x-A.p.x,y:B.p.y-A.p.y,z:B.p.z-A.p.z},ac={x:C.p.x-A.p.x,y:C.p.y-A.p.y,z:C.p.z-A.p.z},n=norm(cross(ab,ac)),front=n.z; if(front<-.18)continue;faces.push({A,B,C,node,n,lum:clamp(.14+Math.max(0,dot(n,light))*.88,0,1),z:(A.q.z+B.q.z+C.q.z)/3})}}faces.sort((a,b)=>b.z-a.z);for(const f of faces){const c=mix(color(f.node),palette.accent,f.lum*.42);ctx.fillStyle=rgb(c,(.28+.58*f.lum)*intensity);ctx.beginPath();ctx.moveTo(f.A.q.x,f.A.q.y);ctx.lineTo(f.B.q.x,f.B.q.y);ctx.lineTo(f.C.q.x,f.C.q.y);ctx.closePath();ctx.fill();if(f.lum>.68){ctx.strokeStyle=rgb(palette.accent,.08+.16*ctrl("deform"));ctx.lineWidth=.55;ctx.stroke()}}}
-function drawTethers(){if(!layers.tethers)return;const ns=garden.nodes;ctx.save();ctx.globalCompositeOperation="screen";for(let i=0;i<ns.length;i++)for(let j=i+1;j<ns.length;j++){const a=ns[i],b=ns[j],dx=b.x-a.x,dy=b.y-a.y,dz=b.z-a.z,d=Math.hypot(dx,dy,dz),reach=(a.r+b.r)*2.4;if(d<reach){const A=project3(a),B=project3(b),q=clamp(1-d/reach,0,1),mx=(A.x+B.x)*.5,my=(A.y+B.y)*.5,off=(.04+ctrl("gravity")*.09)*Math.min(W,H);ctx.strokeStyle=rgb(mix(color(a),color(b),.5),.06+.22*q);ctx.lineWidth=.4+q*1.8;ctx.beginPath();ctx.moveTo(A.x,A.y);ctx.quadraticCurveTo(mx,my+Math.sin(time+a.phase)*off,B.x,B.y);ctx.stroke()}}ctx.restore()}
-function drawMembrane(){if(!layers.membrane)return;let p=0,ns=garden.nodes,thr=1.94-ctrl("mass")*.10;for(let gy=0;gy<fieldH;gy++){let y=((gy+.5)/fieldH-.5)*2.4;for(let gx=0;gx<fieldW;gx++,p+=4){let x=(gx+.5)/fieldW*2.8-.3,f=0,cr=0,cg=0,cb=0,ws=0;for(const n of ns){const dx=x-n.x,dy=y-n.y,d2=dx*dx+dy*dy+.0002,w=(n.r*.32)**2/d2;f+=w;ws+=w;const c=color(n);cr+=c[0]*w;cg+=c[1]*w;cb+=c[2]*w}const band=Math.abs(f-thr);if(band<.18){let a=(1-band/.18)*70;fieldImage.data[p]=cr/ws;fieldImage.data[p+1]=cg/ws;fieldImage.data[p+2]=cb/ws;fieldImage.data[p+3]=a}else{fieldImage.data[p]=fieldImage.data[p+1]=fieldImage.data[p+2]=fieldImage.data[p+3]=0}}}fieldCtx.putImageData(fieldImage,0,0);ctx.save();ctx.globalCompositeOperation="screen";ctx.globalAlpha=.62;ctx.drawImage(fieldCanvas,0,0,fieldW,fieldH,-W*.5,-H*.5,W,H);ctx.restore()}
-function makeClosedPath(s){const pts=[];const n=95,amp=ctrl("splines"),R=Math.min(W,H)*frameReach;for(let i=0;i<=n;i++){const u=i/n*Math.PI*2,phase=time*s.rate+s.phase;let x=0,y=0;if(s.shape===0){const rr=(s.rad+.07*Math.sin(u*3+phase))*R;x=Math.cos(u)*rr;y=Math.sin(u)*rr*.56+s.amp*R*Math.sin(u*2+phase)*(1+amp)}else if(s.shape===1){const rr=s.rad*R*(.75+.32*Math.cos(u*5+phase));x=Math.cos(u)*rr;y=Math.sin(u)*rr*.66}else if(s.shape===2){const q=u+phase*.18;const rr=s.rad*R*(.50+.32*Math.cos(q*5));x=Math.cos(q)*rr;y=Math.sin(q)*rr*.68}else{const q=u;const rr=s.rad*R*.42;x=rr*16*Math.sin(q)**3/16;y=-rr*(13*Math.cos(q)-5*Math.cos(2*q)-2*Math.cos(3*q)-Math.cos(4*q))/16}pts.push({x:x+R*.23,y:y+s.amp*R*.24*Math.sin(time+s.phase)})}return pts}
-function drawFilledSplines(){if(!layers.splines)return;ctx.save();ctx.globalCompositeOperation="screen";for(const s of garden.splines){const pts=makeClosedPath(s),c=palette.kind==="rainbow"?hsl((s.flavor+time*hueDrift*.02+ctrl("hue")*.08)%1,.78,.60):mix(palette.base,palette.accent,s.flavor);ctx.beginPath();pts.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));ctx.closePath();ctx.fillStyle=rgb(c,.030+.105*ctrl("splines"));ctx.fill();ctx.strokeStyle=rgb(palette.accent,.055+.15*ctrl("splines"));ctx.lineWidth=.45+ctrl("splines")*.8;ctx.stroke()}ctx.restore()}
+function drawTethers(){if(!layers.tethers)return;const ns=activeNodes();ctx.save();ctx.globalCompositeOperation="screen";for(let i=0;i<ns.length;i++)for(let j=i+1;j<ns.length;j++){const a=ns[i],b=ns[j],dx=b.x-a.x,dy=b.y-a.y,dz=b.z-a.z,d=Math.hypot(dx,dy,dz),reach=(a.r+b.r)*2.4;if(d<reach){const A=project3(a),B=project3(b),q=clamp(1-d/reach,0,1),mx=(A.x+B.x)*.5,my=(A.y+B.y)*.5,off=(.04+ctrl("gravity")*.09)*Math.min(W,H);ctx.strokeStyle=rgb(mix(color(a),color(b),.5),.06+.22*q);ctx.lineWidth=.4+q*1.8;ctx.beginPath();ctx.moveTo(A.x,A.y);ctx.quadraticCurveTo(mx,my+Math.sin(time+a.phase)*off,B.x,B.y);ctx.stroke()}}ctx.restore()}
+function drawMembrane(){if(!layers.membrane)return;let p=0,ns=activeNodes(),thr=1.94-ctrl("mass")*.10;for(let gy=0;gy<fieldH;gy++){let y=((gy+.5)/fieldH-.5)*2.4;for(let gx=0;gx<fieldW;gx++,p+=4){let x=(gx+.5)/fieldW*2.8-.3,f=0,cr=0,cg=0,cb=0,ws=0;for(const n of ns){const dx=x-n.x,dy=y-n.y,d2=dx*dx+dy*dy+.0002,w=(n.r*.32)**2/d2;f+=w;ws+=w;const c=color(n);cr+=c[0]*w;cg+=c[1]*w;cb+=c[2]*w}const band=Math.abs(f-thr);if(band<.18){let a=(1-band/.18)*70;fieldImage.data[p]=cr/ws;fieldImage.data[p+1]=cg/ws;fieldImage.data[p+2]=cb/ws;fieldImage.data[p+3]=a}else{fieldImage.data[p]=fieldImage.data[p+1]=fieldImage.data[p+2]=fieldImage.data[p+3]=0}}}fieldCtx.putImageData(fieldImage,0,0);ctx.save();ctx.globalCompositeOperation="screen";ctx.globalAlpha=.62;ctx.drawImage(fieldCanvas,0,0,fieldW,fieldH,-W*.5,-H*.5,W,H);ctx.restore()}
+function splinePolicy(){
+  // Filled splines are beautiful but expensive: each one is a closed translucent
+  // polygon repeated once per kaleidoscope sector. They are therefore a low-fold hero layer.
+  const allowed=symmetry<=5&&qualityTier<2;
+  const count=!allowed?0:(symmetry<=3?(qualityTier===0?6:3):(symmetry===4?(qualityTier===0?4:2):1));
+  const segments=!allowed?0:(symmetry<=3?(qualityTier===0?56:40):(symmetry===4?(qualityTier===0?42:30):26));
+  return {allowed,count,segments};
+}
+function makeSplinePath(s,n){
+  const path=new Path2D(),amp=ctrl("splines"),R=Math.min(W,H)*frameReach;
+  for(let i=0;i<=n;i++){
+    const u=i/n*Math.PI*2,phase=time*s.rate+s.phase;let x=0,y=0;
+    if(s.shape===0){
+      const rr=(s.rad+.07*Math.sin(u*3+phase))*R;
+      x=Math.cos(u)*rr;y=Math.sin(u)*rr*.56+s.amp*R*Math.sin(u*2+phase)*(1+amp);
+    }else if(s.shape===1){
+      const rr=s.rad*R*(.75+.32*Math.cos(u*5+phase));
+      x=Math.cos(u)*rr;y=Math.sin(u)*rr*.66;
+    }else if(s.shape===2){
+      const q=u+phase*.18,rr=s.rad*R*(.50+.32*Math.cos(q*5));
+      x=Math.cos(q)*rr;y=Math.sin(q)*rr*.68;
+    }else{
+      const q=u,rr=s.rad*R*.42;
+      x=rr*Math.sin(q)**3;
+      y=-rr*(13*Math.cos(q)-5*Math.cos(2*q)-2*Math.cos(3*q)-Math.cos(4*q))/16;
+    }
+    x+=R*.23;y+=s.amp*R*.24*Math.sin(time+s.phase);
+    if(i)path.lineTo(x,y);else path.moveTo(x,y);
+  }
+  path.closePath();
+  return path;
+}
+function getSplineCache(){
+  const policy=splinePolicy(),key=`${symmetry}|${qualityTier}|${policy.count}|${policy.segments}|${time}`;
+  if(splineCache.at===time&&splineCache.key===key)return splineCache;
+  splineCache={
+    at:time,key,policy,
+    paths:policy.allowed?garden.splines.slice(0,policy.count).map(s=>({s,path:makeSplinePath(s,policy.segments)})):[]
+  };
+  return splineCache;
+}
+function drawSplinePass(mirrored=false){
+  const cached=getSplineCache();
+  if(!cached.policy.allowed||!cached.paths.length)return;
+  ctx.save();
+  if(mirrored)ctx.scale(-1,1);
+  ctx.globalCompositeOperation="screen";
+  for(const entry of cached.paths){
+    const s=entry.s,path=entry.path;
+    const c=palette.kind==="rainbow"
+      ?hsl((s.flavor+time*hueDrift*.02+ctrl("hue")*.08)%1,.78,.60)
+      :mix(palette.base,palette.accent,s.flavor);
+    ctx.fillStyle=rgb(c,.026+.085*ctrl("splines"));
+    ctx.fill(path);
+    ctx.strokeStyle=rgb(palette.accent,.045+.12*ctrl("splines"));
+    ctx.lineWidth=.42+ctrl("splines")*.65;
+    ctx.stroke(path);
+  }
+  ctx.restore();
+}
+function drawFilledSplines(){if(layers.splines)drawSplinePass(false)}
+function drawMirrorSplines(){if(layers.mirror)drawSplinePass(true)}
 function drawRings(){if(!layers.rings)return;ctx.save();ctx.globalCompositeOperation="screen";const E=ctrl("hue"),R=Math.min(W,H)*frameReach;for(let i=0;i<8;i++){let a=time*.18*(i%2?1:-1)+i*.43,r=(.10+i*.055+Math.sin(time+i)*.014)*R;ctx.strokeStyle=rgb(palette.kind==="rainbow"?hsl((i/8+time*hueDrift*.03)%1,.76,.6):mix(palette.base,palette.accent,i/8),.025+.06*E);ctx.lineWidth=.45+E*.6;ctx.beginPath();ctx.arc(0,0,r,a,a+Math.PI*(.8+E*.7));ctx.stroke()}ctx.restore()}
-function updateParticles(dt){if(!layers.particles)return;const E=ctrl("particles"),tw=trailCanvas.width,th=trailCanvas.height;trailCtx.fillStyle="rgba(1,4,7,.062)";trailCtx.fillRect(0,0,tw,th);trailCtx.lineCap="round";for(const p of garden.particles){p.px=p.x;p.py=p.y;p.pz=p.z;let fx=Math.sin(p.y*7.5+time+p.phase)*(.0008+.0021*E),fy=Math.cos(p.x*7.9-time*1.2+p.phase)*(.0008+.0021*E),fz=Math.sin(time*1.3+p.phase)*.0008;for(const n of garden.nodes){const dx=p.x-n.x,dy=p.y-n.y,dz=p.z-n.z,d2=dx*dx+dy*dy+dz*dz+.010,k=n.r*n.r/d2*(.00018+.00105*E);fx+=-dy*k;fy+=dx*k;fz+=dz*k*.16}p.vx=(p.vx+fx*dt)*.978;p.vy=(p.vy+fy*dt)*.978;p.vz=(p.vz+fz*dt)*.978;p.x+=p.vx*dt;p.y+=p.vy*dt;p.z=clamp(p.z+p.vz*dt,-1.0,1.0);if(p.x<-.42||p.x>3.08||p.y<-1.5||p.y>1.5){p.x=-.12+Math.random()*2.85;p.y=(Math.random()-.5)*2.42;p.vx=p.vy=0}const A=project3({x:p.px,y:p.py,z:p.pz}),B=project3(p),c=palette.kind==="rainbow"?hsl((p.flavor+time*hueDrift*.03+ctrl("hue")*.08)%1,.8,.62):mix(palette.base,palette.accent,p.flavor);trailCtx.strokeStyle=rgb(c,.032+.17*E);trailCtx.lineWidth=.24+p.size*.34+E*.38;trailCtx.beginPath();trailCtx.moveTo((A.x+W*.5)/W*tw,(A.y+H*.5)/H*th);trailCtx.lineTo((B.x+W*.5)/W*tw,(B.y+H*.5)/H*th);trailCtx.stroke()}}function drawParticles(){if(!layers.particles)return;ctx.save();ctx.globalCompositeOperation="screen";ctx.globalAlpha=.96;ctx.drawImage(trailCanvas,0,0,trailCanvas.width,trailCanvas.height,-W*.5,-H*.5,W,H);ctx.restore()}
-function updateSymbols(dt){const E=ctrl("symbols");for(const s of garden.symbols){s.vx=(s.vx+Math.sin(time*s.rate+s.phase)*.000024*(1+E))* .992;s.vy=(s.vy+Math.cos(time*s.rate+s.phase)*.000024*(1+E))* .992;s.x+=s.vx*dt;s.y+=s.vy*dt;if(s.x<-.35||s.x>3.15)s.vx*=-1;if(s.y<-1.45||s.y>1.45)s.vy*=-1;s.x=clamp(s.x,-.35,3.15);s.y=clamp(s.y,-1.45,1.45)}}function drawSymbols(){if(!layers.symbols)return;const E=ctrl("symbols"),num=Math.floor(28+E*145),max=Math.min(num,garden.symbols.length);ctx.save();ctx.globalCompositeOperation="screen";ctx.textAlign="center";ctx.textBaseline="middle";for(let i=0;i<max;i++){const s=garden.symbols[i],p={x:s.x,y:s.y,z:s.z+Math.sin(time*s.rate+s.phase)*.24},q=project3(p),c=palette.kind==="rainbow"?hsl((s.flavor+time*hueDrift*.025+ctrl("hue")*.11)%1,.86,.66):mix(palette.base,palette.accent,s.flavor),outer=clamp(Math.hypot(s.x-.65,s.y)*.44,0,1.3),size=s.size*(.70+E*1.45)*(1+.24*Math.sin(time*1.3+s.phase))*(.72+outer*.92);ctx.fillStyle=rgb(c,.10+.40*E);ctx.font=`${Math.round(size)}px "Segoe UI Symbol","Noto Sans Symbols",sans-serif`;ctx.fillText(s.glyph,q.x,q.y)}ctx.restore()}
-function updateLife(){const L=life,{cols,rows,cur,next}=L;for(let y=0;y<rows;y++)for(let x=0;x<cols;x++){let c=0;for(let oy=-1;oy<=1;oy++)for(let ox=-1;ox<=1;ox++)if(ox||oy)c+=cur[((y+oy+rows)%rows)*cols+(x+ox+cols)%cols];const i=y*cols+x;next[i]=(c===3||(cur[i]&&c===2))?1:0}cur.set(next);next.fill(0);if(ctrl("life")>.35)for(let i=0;i<Math.floor(ctrl("life")*6);i++){let x=Math.floor((.15+Math.random()*.65)*cols),y=Math.floor((.22+Math.random()*.56)*rows);cur[y*cols+x]=1}}
-function drawLife(){if(!layers.life)return;const L=life,E=ctrl("life"),base=Math.min(W,H)*frameReach,cw=base*.0082,ch=cw*.78;ctx.save();ctx.globalCompositeOperation="screen";for(let y=0;y<L.rows;y++)for(let x=0;x<L.cols;x++)if(L.cur[y*L.cols+x]){let px=(x/L.cols-.06)*base*1.42,py=(y/L.rows-.5)*base*1.18,wave=.5+.5*Math.sin(time*3+x*.22+y*.18),c=palette.kind==="rainbow"?hsl((x/L.cols+time*hueDrift*.02)%1,.78,.65):mix(palette.base,palette.accent,(x+y)%16/16),alpha=(.06+.31*E)*wave;ctx.fillStyle=rgb(c,alpha);ctx.fillRect(px,py,cw*(.62+E),ch*(.62+E));if(E>.58&&wave>.84){ctx.fillStyle=rgb([255,255,255],.10+.42*E);ctx.fillRect(px,py,cw*(.44+E*.18),ch*(.44+E*.18))}}ctx.restore()}
-function withSymmetry(fn,depth=0){const R=Math.min(W,H),count=symmetry;for(let i=0;i<count;i++){ctx.save();const a=i*Math.PI*2/count;ctx.rotate(a);if(reflection&&i%2)ctx.scale(-1,1);const phase=time*.22+i*1.37,spread=layerSpread*depth*R;ctx.translate(spread*(.48+.18*Math.sin(phase)),spread*.18*Math.cos(phase*1.31));ctx.transform(1,Math.sin(phase)*layerSpread*.055,Math.cos(phase)*layerSpread*.022,1,0,0);fn(i);ctx.restore()}}
-function drawSector(){drawRings();drawFilledSplines();drawMembrane();drawParticles();drawTethers();drawMeshSector();drawLife();drawSymbols()}
+
+function helixPolicy(){
+  const count=symmetry<=3?(qualityTier===0?5:3):symmetry<=5?3:symmetry===6?2:1;
+  const steps=symmetry<=3?(qualityTier===0?72:46):symmetry<=5?42:26;
+  return {count,steps};
+}
+function drawHelixRibbons(){
+  if(!layers.helix||qualityTier===2)return;
+  const policy=helixPolicy(),R=Math.min(W,H)*frameReach,E=ctrl("splines"),hueEnergy=ctrl("hue");
+  ctx.save();ctx.globalCompositeOperation="screen";
+  for(let strand=0;strand<policy.count;strand++){
+    const phase=time*(.45+strand*.08)+strand*1.73;
+    const colorA=palette.kind==="rainbow"
+      ?hsl((strand/policy.count+time*hueDrift*.025+hueEnergy*.10)%1,.83,.64)
+      :mix(palette.base,palette.accent,strand/(policy.count+1));
+    for(const side of [-1,1]){
+      ctx.beginPath();
+      for(let i=0;i<=policy.steps;i++){
+        const u=i/policy.steps;
+        const x=(-.10+u*1.76)*R;
+        const wave=Math.sin(u*Math.PI*(3.0+strand*.55)+phase)*(.08+.12*E);
+        const cork=Math.cos(u*Math.PI*(5.0+strand*.31)-phase*1.23)*(.035+.07*hueEnergy);
+        const y=(side*(.10+strand*.055)+wave+cork)*R;
+        if(i)ctx.lineTo(x,y);else ctx.moveTo(x,y);
+      }
+      ctx.strokeStyle=rgb(colorA,.055+.16*E);
+      ctx.lineWidth=.55+E*1.65+strand*.13;
+      ctx.stroke();
+    }
+    ctx.strokeStyle=rgb(palette.accent,.035+.10*E);ctx.lineWidth=.5;
+    const bars=Math.max(4,Math.floor(policy.steps/7));
+    for(let i=0;i<bars;i++){
+      const u=i/(bars-1),x=(-.10+u*1.76)*R;
+      const a=Math.sin(u*Math.PI*(3.0+strand*.55)+phase)*(.08+.12*E)+Math.cos(u*Math.PI*(5.0+strand*.31)-phase*1.23)*(.035+.07*hueEnergy);
+      ctx.beginPath();ctx.moveTo(x,(a+.10+strand*.055)*R);ctx.lineTo(x,(a-.10-strand*.055)*R);ctx.stroke();
+    }
+  }
+  ctx.restore();
+}
+function branchPolicy(){
+  // Denser than v14, but the budget still scales with fold count and quality tier.
+  if(qualityTier===2)return {count:0};
+  return {count:symmetry<=3?150:symmetry<=5?104:symmetry===6?56:symmetry===8?30:12};
+}
+function drawForkingGrowth(){
+  if(!layers.branches)return;
+  const policy=branchPolicy();if(!policy.count)return;
+  const R=Math.min(W,H)*frameReach,E=ctrl("deform"),hueEnergy=ctrl("hue"),segments=garden.branches.slice(0,policy.count);
+  ctx.save();ctx.globalCompositeOperation="screen";
+  for(const s of segments){
+    // A shared root wave travels outward through generations. This reads as a living
+    // branching system instead of independent sticks blinking at arbitrary times.
+    const rootProgress=(time*(.115+.045*E)+s.root*.271)%1;
+    const reveal=clamp((rootProgress*6.75-s.depth*.92),0,1);
+    if(reveal<=.015)continue;
+    const ex=lerp(s.x1,s.x2,reveal),ey=lerp(s.y1,s.y2,reveal);
+    const c=palette.kind==="rainbow"
+      ?hsl((s.flavor+time*hueDrift*.02+hueEnergy*.09)%1,.80,.64)
+      :mix(palette.base,palette.accent,s.flavor);
+    ctx.strokeStyle=rgb(c,.070+.26*E);
+    ctx.lineWidth=Math.max(.78,(4.15-s.depth*.47)*(.66+E*.72));
+    ctx.beginPath();ctx.moveTo(s.x1*R,s.y1*R);ctx.lineTo(ex*R,ey*R);ctx.stroke();
+    if(reveal>.92&&s.depth>1){
+      ctx.fillStyle=rgb(c,.09+.20*hueEnergy);
+      ctx.beginPath();ctx.arc(ex*R,ey*R,1.5+hueEnergy*3.8,0,Math.PI*2);ctx.fill();
+    }
+  }
+  ctx.restore();
+}
+function mazePolicy(){
+  // The maze remains visible in manual high-fold compositions, just reduced to
+  // one small pathfinder rather than the expensive full traversal.
+  if(qualityTier===2)return {edges:0,walkers:0};
+  return {edges:symmetry<=3?150:symmetry<=5?86:symmetry===6?48:symmetry===8?26:12,walkers:symmetry<=5?3:1};
+}
+function mazePoint(point,maze,R){
+  return {x:(.02+point.x/(maze.cols-1)*1.64)*R,y:((point.y/(maze.rows-1)-.5)*1.82)*R};
+}
+function drawMazeWalkers(){
+  if(!layers.maze)return;
+  const policy=mazePolicy();if(!policy.edges)return;
+  const maze=garden.maze,R=Math.min(W,H)*frameReach,E=ctrl("particles"),hueEnergy=ctrl("hue"),total=Math.min(policy.edges,maze.path.length-1);
+  ctx.save();ctx.globalCompositeOperation="screen";
+  ctx.strokeStyle=rgb(palette.kind==="rainbow"?hsl((maze.flavor+time*hueDrift*.018)%1,.76,.62):mix(palette.base,palette.accent,maze.flavor),.025+.09*E);
+  ctx.lineWidth=.55+E*.75;ctx.beginPath();
+  for(let i=0;i<=total;i++){
+    const q=mazePoint(maze.path[i],maze,R);
+    if(i)ctx.lineTo(q.x,q.y);else ctx.moveTo(q.x,q.y);
+  }
+  ctx.stroke();
+  for(let w=0;w<policy.walkers;w++){
+    const travel=(time*(.55+w*.19)+maze.phase+w*.37)%(total-1);
+    const i=Math.floor(travel),f=travel-i;
+    const a=mazePoint(maze.path[i],maze,R),b=mazePoint(maze.path[i+1],maze,R);
+    const x=lerp(a.x,b.x,f),y=lerp(a.y,b.y,f);
+    const c=palette.kind==="rainbow"?hsl((maze.flavor+w*.12+time*hueDrift*.04+hueEnergy*.12)%1,.90,.72):palette.accent;
+    ctx.fillStyle=rgb(c,.32+.50*E);ctx.beginPath();ctx.arc(x,y,2.0+E*4.0,0,Math.PI*2);ctx.fill();
+    ctx.strokeStyle=rgb(c,.13+.28*E);ctx.lineWidth=1.2+E*1.5;ctx.beginPath();ctx.arc(x,y,7+E*14,0,Math.PI*2);ctx.stroke();
+  }
+  ctx.restore();
+}
+
+function tunnelPolicy(){
+  if(qualityTier===2)return {gates:7,rails:4};
+  return {gates:symmetry<=3?18:symmetry<=5?15:symmetry<=6?12:9,rails:symmetry<=3?10:symmetry<=5?8:6};
+}
+function gatePath(cx,cy,r,mode,twist){
+  const path=new Path2D();
+  if(mode===0){path.arc(cx,cy,r,0,Math.PI*2);return path}
+  const sides=mode===1?6:mode===2?4:8;
+  for(let i=0;i<=sides;i++){
+    const a=twist+i*Math.PI*2/sides;
+    const wobble=mode===3?1+.09*Math.sin(i*2+twist*3):1;
+    const x=cx+Math.cos(a)*r*wobble,y=cy+Math.sin(a)*r*(mode===2?.72:1)*wobble;
+    if(i)path.lineTo(x,y);else path.moveTo(x,y);
+  }
+  path.closePath();return path;
+}
+function drawDriveTunnel(){
+  if(!layers.tunnel)return;
+  const policy=tunnelPolicy(),R=Math.hypot(W,H)*.50*frameReach;
+  const speed=.115+ctrl("mass")*.22+ctrl("particles")*.045;
+  const phase=(time*speed)%1;
+  const driftX=Math.sin(time*.19)*R*.050+Math.sin(time*.067)*R*.026;
+  const driftY=Math.cos(time*.17+.6)*R*.034;
+  const rot=sceneRotation*.28+time*(rotationSpeed*.22);
+  const near=[];
+  ctx.save();ctx.globalCompositeOperation="screen";ctx.rotate(rot);
+  for(let i=0;i<policy.gates;i++){
+    const z=(i/policy.gates+phase)%1;
+    const p=z*z; // z=0 distant, z=1 rushing past viewer
+    const radius=R*(.040+p*p*1.48);
+    const cx=driftX*(.12+p*.88)+Math.sin(time*.31+i*.78)*R*.018*p;
+    const cy=driftY*(.12+p*.88)+Math.cos(time*.27+i*.62)*R*.014*p;
+    const mode=(i+Math.floor(time*.18))%4;
+    const c=palette.kind==="rainbow"?hsl((i/policy.gates+time*hueDrift*.028+ctrl("hue")*.12)%1,.82,.66):mix(palette.base,palette.accent,i/(policy.gates-1));
+    const alpha=(.018+.105*p*p)*(.58+ctrl("mass")*.6);
+    ctx.strokeStyle=rgb(c,alpha);ctx.lineWidth=.45+p*2.0;
+    ctx.stroke(gatePath(cx,cy,radius,mode,time*.22+i*.31));
+    if(p>.55)near.push({cx,cy,r:radius,c,p});
+  }
+  // Perspective rails connect the vanishing point to a handful of near gates.
+  for(const gate of near.slice(-Math.min(policy.rails,near.length))){
+    for(let j=0;j<policy.rails;j++){
+      const a=rot+j*Math.PI*2/policy.rails;
+      const ex=gate.cx+Math.cos(a)*gate.r,ey=gate.cy+Math.sin(a)*gate.r;
+      ctx.strokeStyle=rgb(gate.c,.016+gate.p*.05);ctx.lineWidth=.38+gate.p*.7;
+      ctx.beginPath();ctx.moveTo(driftX*.12,driftY*.12);ctx.lineTo(ex,ey);ctx.stroke();
+    }
+  }
+  ctx.restore();
+}
+function stripePolicy(){
+  if(qualityTier===2)return {count:7,segments:18};
+  return {count:symmetry<=3?18:symmetry<=5?13:symmetry<=6?10:7,segments:symmetry<=3?52:symmetry<=5?36:24};
+}
+function drawPhaseStripes(){
+  if(!layers.stripes||qualityTier===2)return;
+  const policy=stripePolicy(),R=Math.min(W,H)*frameReach,E=ctrl("particles"),D=ctrl("deform");
+  ctx.save();ctx.globalCompositeOperation="screen";
+  for(let stripe=0;stripe<policy.count;stripe++){
+    const base=(stripe/(policy.count-1)-.5)*2.05*R;
+    const phase=time*(.55+stripe*.025)+stripe*.79;
+    const c=palette.kind==="rainbow"?hsl((stripe/policy.count+time*hueDrift*.025)%1,.77,.63):mix(palette.base,palette.accent,stripe/(policy.count-1));
+    ctx.strokeStyle=rgb(c,.020+.095*E);ctx.lineWidth=.45+E*1.35;
+    ctx.beginPath();
+    for(let i=0;i<=policy.segments;i++){
+      const u=i/policy.segments,x=(-.26+u*2.35)*R;
+      const y=base+Math.sin(u*Math.PI*(1.8+stripe*.08)+phase)*R*(.025+.11*D)+Math.cos(u*Math.PI*4-phase)*R*.020*E;
+      if(i)ctx.lineTo(x,y);else ctx.moveTo(x,y);
+    }
+    ctx.stroke();
+  }
+  ctx.restore();
+}
+function performanceScale(){return qualityTier===2?.32:qualityTier===1?.60:1}function activeParticleBudget(){const base=symmetry>=8?80:symmetry>=6?135:garden.particles.length;return Math.max(32,Math.floor(base*performanceScale()))}
+function updateParticles(dt){
+  if(!layers.particles)return;
+  const E=ctrl("particles"),tw=trailCanvas.width,th=trailCanvas.height,limit=activeParticleBudget();
+  trailCtx.fillStyle="rgba(1,4,7,.072)";trailCtx.fillRect(0,0,tw,th);trailCtx.lineCap="round";
+  for(let index=0;index<limit;index++){
+    const p=garden.particles[index];p.px=p.x;p.py=p.y;p.pz=p.z;
+    let fx=Math.sin(p.y*7.5+time+p.phase)*(.0012+.0030*E),fy=Math.cos(p.x*7.9-time*1.2+p.phase)*(.0012+.0030*E),fz=Math.sin(time*1.3+p.phase)*.0011;
+    for(const n of activeNodes()){const dx=p.x-n.x,dy=p.y-n.y,dz=p.z-n.z,d2=dx*dx+dy*dy+dz*dz+.010,k=n.r*n.r/d2*(.00024+.00135*E);fx+=-dy*k;fy+=dx*k;fz+=dz*k*.16}
+    p.vx=(p.vx+fx*dt)*.977;p.vy=(p.vy+fy*dt)*.977;p.vz=(p.vz+fz*dt)*.977;p.x+=p.vx*dt;p.y+=p.vy*dt;p.z=clamp(p.z+p.vz*dt,-1.0,1.0);
+    if(p.x<-.55||p.x>3.30||p.y<-1.68||p.y>1.68){p.x=-.22+Math.random()*3.08;p.y=(Math.random()-.5)*2.74;p.vx=p.vy=0}
+    const A=project3({x:p.px,y:p.py,z:p.pz}),B=project3(p),c=palette.kind==="rainbow"?hsl((p.flavor+time*hueDrift*.03+ctrl("hue")*.08)%1,.82,.66):mix(palette.base,palette.accent,p.flavor);
+    trailCtx.strokeStyle=rgb(c,.065+.27*E);trailCtx.lineWidth=.45+p.size*.55+E*.72;trailCtx.beginPath();trailCtx.moveTo((A.x+W*.5)/W*tw,(A.y+H*.5)/H*th);trailCtx.lineTo((B.x+W*.5)/W*tw,(B.y+H*.5)/H*th);trailCtx.stroke();
+  }
+}
+function drawParticles(){if(!layers.particles)return;ctx.save();ctx.globalCompositeOperation="screen";ctx.globalAlpha=(.72+.16*ctrl("particles"))*foldGain();ctx.drawImage(trailCanvas,0,0,trailCanvas.width,trailCanvas.height,-W*.5,-H*.5,W,H);ctx.restore()}
+function updateSymbols(dt){const E=ctrl("symbols");for(const s of garden.symbols){s.vx=(s.vx+Math.sin(time*s.rate+s.phase)*.000024*(1+E))* .992;s.vy=(s.vy+Math.cos(time*s.rate+s.phase)*.000024*(1+E))* .992;s.x+=s.vx*dt;s.y+=s.vy*dt;if(s.x<-.35||s.x>3.15)s.vx*=-1;if(s.y<-1.45||s.y>1.45)s.vy*=-1;s.x=clamp(s.x,-.35,3.15);s.y=clamp(s.y,-1.45,1.45)}}function drawSymbols(){if(!layers.symbols)return;const E=ctrl("symbols"),baseCap=symmetry>=8?52:symmetry>=6?92:garden.symbols.length,cap=Math.max(22,Math.floor(baseCap*performanceScale())),num=Math.floor(32+E*150),max=Math.min(num,cap,garden.symbols.length);ctx.save();ctx.globalCompositeOperation="screen";ctx.textAlign="center";ctx.textBaseline="middle";for(let i=0;i<max;i++){const s=garden.symbols[i],p={x:s.x,y:s.y,z:s.z+Math.sin(time*s.rate+s.phase)*.24},q=project3(p),c=palette.kind==="rainbow"?hsl((s.flavor+time*hueDrift*.025+ctrl("hue")*.11)%1,.86,.66):mix(palette.base,palette.accent,s.flavor),outer=clamp(Math.hypot(s.x-.65,s.y)*.44,0,1.3),size=s.size*(.78+E*1.70)*(1+.31*Math.sin(time*1.3+s.phase))*(.64+outer*1.18);ctx.fillStyle=rgb(c,.10+.40*E);ctx.font=`${Math.round(size)}px "Segoe UI Symbol","Noto Sans Symbols",sans-serif`;ctx.fillText(s.glyph,q.x,q.y)}ctx.restore()}
+function seedLifePattern(){
+  const L=life,rule=lifeRules[lifeRule],cx=Math.floor(L.cols*(.26+Math.random()*.46)),cy=Math.floor(L.rows*(.25+Math.random()*.48));
+  const patterns=[[[0,1],[1,2],[2,0],[2,1],[2,2]],[[0,0],[1,0],[2,0],[3,0],[4,0]],[[0,1],[1,0],[1,2],[2,1],[2,2],[3,1]],[[0,0],[1,0],[2,0],[0,1],[2,1],[0,2],[1,2],[2,2]]];
+  const pat=patterns[Math.floor(Math.random()*patterns.length)];
+  for(const [dx,dy] of pat){const x=(cx+dx+L.cols)%L.cols,y=(cy+dy+L.rows)%L.rows;L.cur[y*L.cols+x]=1;}
+}
+function updateLife(){
+  const L=life,{cols,rows,cur,next}=L,rule=lifeRules[lifeRule];
+  for(let y=0;y<rows;y++)for(let x=0;x<cols;x++){
+    let c=0;for(let oy=-1;oy<=1;oy++)for(let ox=-1;ox<=1;ox++)if(ox||oy)c+=cur[((y+oy+rows)%rows)*cols+(x+ox+cols)%cols];
+    const i=y*cols+x;next[i]=cur[i]?Number(rule.survive.includes(c)):Number(rule.birth.includes(c));
+  }
+  cur.set(next);next.fill(0);
+  if(ctrl("life")>.48){const inject=Math.floor(ctrl("life")*3);for(let i=0;i<inject;i++)seedLifePattern();}
+}
+function drawLife(){
+  if(!layers.life)return;
+  const L=life,E=ctrl("life"),base=Math.min(W,H)*frameReach*1.28,cw=base/L.cols,ch=base*.77/L.rows,flash=clamp((E-.55)*1.8,0,1);
+  ctx.save();ctx.globalCompositeOperation="screen";
+  for(let y=0;y<L.rows;y++)for(let x=0;x<L.cols;x++)if(L.cur[y*L.cols+x]){
+    const px=(x/L.cols-.11)*base,py=(y/L.rows-.5)*base*.77,wave=.78+.22*Math.sin(time*2.4+x*.19+y*.13),c=palette.kind==="rainbow"?hsl((x/L.cols+time*hueDrift*.02)%1,.80,.65):mix(palette.base,palette.accent,(x+y)%16/16),alpha=(.12+.36*E)*wave;
+    ctx.fillStyle=rgb(c,alpha);ctx.fillRect(px,py,cw*1.03,ch*1.03);
+    if(flash>.02){ctx.fillStyle=rgb([255,255,255],flash*.30*wave);ctx.fillRect(px+cw*.13,py+ch*.13,cw*.72,ch*.72)}
+  }
+  ctx.restore();
+}
+function foldGain(){return symmetry<=5?1:symmetry===6?.82:symmetry===8?.62:symmetry===10?.50:.42}
+function maxActiveLayers(){return symmetry>=8?4:symmetry>=6?5:symmetry===5?6:99}
+function nodeBudget(){return symmetry>=6?Math.min(2,cellCount):cellCount}
+function activeNodes(){return garden.nodes.slice(0,nodeBudget())}
+function applyFoldSafety(showNotice=false){
+  let changed=false,reasons=[];
+  if(symmetry>=6&&cellCount>2){
+    cellCount=2;$("cellCount").value=cellCount;changed=true;reasons.push("sparse cells");
+  }
+  // Filled splines are deliberately excluded at 6+ folds. Their duplicate fills
+  // were the main source of the pathological high-fold frame drops.
+  if(symmetry>=6){
+    for(const key of ["splines","mirror"]){
+      if(layers[key]){
+        layers[key]=false;
+        const el=document.querySelector(`[data-layer="${key}"]`);
+        if(el)el.classList.remove("active");
+        changed=true;
+      }
+    }
+    reasons.push("splines parked");
+  }
+  if(symmetry>=10){
+    for(const key of ["branches","maze"]){
+      if(layers[key]){
+        layers[key]=false;
+        const el=document.querySelector(`[data-layer="${key}"]`);
+        if(el)el.classList.remove("active");
+        changed=true;reasons.push("deep structures parked");
+      }
+    }
+  }
+  if(symmetry>=8){
+    if(rotationSpeed!==0||warble!==0){
+      rotationSpeed=0;warble=0;
+      $("rotationSpeed").value=0;$("warble").value=0;
+      changed=true;reasons.push("motion effects paused");
+    }
+  }else if(symmetry===6&&warble>.38){
+    warble=.38;$("warble").value=warble;changed=true;reasons.push("warble capped");
+  }
+  if(changed&&showNotice)show(`${symmetry}-fold safety profile: ${[...new Set(reasons)].join(" · ")}.`,2300);
+}
+function enforceComplexity(showNotice=false){
+  // Called by automated evolution / micro-wander; manual composition stays sovereign.
+  applyFoldSafety(showNotice);
+  const max=maxActiveLayers(),active=layerOrder.filter(k=>layers[k]);
+  if(active.length>max){
+    for(const key of active.slice(max)){
+      layers[key]=false;
+      const el=document.querySelector(`[data-layer="${key}"]`);
+      if(el)el.classList.remove("active");
+    }
+    if(showNotice)show(`${symmetry}-fold safety limit: kept the top ${max} visual layers.`,2100);
+  }
+  updateDiagnosticCount();
+}
+function withSymmetry(fn,depth=0){
+  const R=Math.min(W,H),count=symmetry,turn=symmetry>=8?0:rotationSpeed;
+  const w=symmetry>=8?0:warble;
+  const angle=sceneRotation+time*turn;
+  // Coverage belongs to the whole source ecology, so rotation never opens dead corners.
+  const cover=1.26+.22*Math.abs(Math.sin(angle))+w*.10;
+
+  // IMPORTANT: this is a single, total substrate warp. It happens before sector
+  // duplication, so every reflected wedge rides the same water motion rather than
+  // each quadrant shaking in a different direction.
+  const q=time*.72;
+  const warpX=Math.sin(q*.81)*w*R*.070 + Math.sin(q*1.63+1.1)*w*R*.028;
+  const warpY=Math.cos(q*.69+.4)*w*R*.052 + Math.cos(q*1.47)*w*R*.020;
+  const warpRot=Math.sin(q*.53)*w*.055;
+  const shearA=Math.sin(q*1.17+.8)*w*.058;
+  const shearB=Math.cos(q*.94-.3)*w*.040;
+
+  ctx.save();
+  ctx.rotate(angle);
+  ctx.scale(cover,cover);
+  ctx.translate(warpX,warpY);
+  ctx.rotate(warpRot);
+  ctx.transform(1,shearA,shearB,1,0,0);
+
+  for(let i=0;i<count;i++){
+    ctx.save();
+    const a=i*Math.PI*2/count;
+    ctx.rotate(a);
+    if(reflection&&i%2)ctx.scale(-1,1);
+
+    // Layer parallax stays subtle and intentional; it is no longer the warble.
+    const phase=time*.22+i*1.37;
+    const spread=layerSpread*depth*R;
+    ctx.translate(
+      spread*(.48+.18*Math.sin(phase)),
+      spread*.18*Math.cos(phase*1.31)
+    );
+    ctx.transform(
+      1,
+      Math.sin(phase*1.8)*layerSpread*.050,
+      Math.cos(phase*1.4)*layerSpread*.020,
+      1,0,0
+    );
+    ctx.globalAlpha=foldGain();
+    fn(i);
+    ctx.restore();
+  }
+  ctx.restore();
+}
+function drawSector(){drawRings();drawHelixRibbons();drawForkingGrowth();drawMazeWalkers();drawFilledSplines();drawMembrane();drawParticles();drawTethers();drawMeshSector();drawLife();drawSymbols()}
 function drawGrid(){if(!layers.grid)return;ctx.save();ctx.strokeStyle=rgb(palette.base,.055);ctx.lineWidth=1;let step=Math.max(40,Math.floor(Math.min(W,H)/14));for(let x=-W;x<W;x+=step){ctx.beginPath();ctx.moveTo(x,-H);ctx.lineTo(x,H);ctx.stroke()}for(let y=-H;y<H;y+=step){ctx.beginPath();ctx.moveTo(-W,y);ctx.lineTo(W,y);ctx.stroke()}ctx.restore()}
 function drawEQ(){if(!layers.eq||W<690)return;let x=W-240,y=70,w=222,h=71;ctx.save();ctx.fillStyle="rgba(2,8,11,.38)";ctx.strokeStyle="rgba(255,255,255,.08)";ctx.beginPath();ctx.roundRect(x,y,w,h,9);ctx.fill();ctx.stroke();let gap=5,bw=(w-14-gap*5)/6;for(let i=0;i<6;i++){let k=bandNames[i],v=clamp(bands[k]*response,0,1),bh=v*(h-23),bx=x+7+i*(bw+gap),by=y+h-8-bh,c=palette.kind==="rainbow"?hsl(i/6+time*hueDrift*.03,.82,.62):mix(palette.base,palette.accent,i/6),g=ctx.createLinearGradient(0,by,0,y+h-8);g.addColorStop(0,rgb(palette.accent,.9));g.addColorStop(1,rgb(c,.15));ctx.fillStyle=g;ctx.fillRect(bx,by,bw,bh);ctx.fillStyle="rgba(240,251,246,.56)";ctx.font="7px ui-monospace,monospace";ctx.textAlign="center";ctx.fillText(bandLabels[k].replace("-",""),bx+bw/2,y+h-2)}ctx.strokeStyle=rgb(palette.base,.35);ctx.lineWidth=1;ctx.beginPath();history.forEach((v,i)=>{let px=x+i/(history.length-1)*w,py=y+h-12-v*(h-23)*3.2;i?ctx.lineTo(px,py):ctx.moveTo(px,py)});ctx.stroke();ctx.restore()}
 function drawPointer(){if(!layers.pointer||!pointer.active)return;let x=(pointer.x-.5)*W,y=(pointer.y-.5)*H,r=9+ctrl("deform")*14+pulse*8;ctx.save();ctx.globalCompositeOperation="screen";ctx.strokeStyle=rgb(palette.accent,.16+.24*ctrl("deform"));ctx.lineWidth=.7;ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.stroke();ctx.beginPath();ctx.arc(x,y,r*.44,0,Math.PI*2);ctx.stroke();ctx.restore()}
 function drawBack(){let g=ctx.createRadialGradient(W*.5,H*.5,8,W*.5,H*.5,Math.max(W,H)*.78);g.addColorStop(0,rgb(mix(palette.deep,palette.base,.07),1));g.addColorStop(.52,rgb(mix([1,3,6],palette.shadow,.25),1));g.addColorStop(1,"rgb(1,3,5)");ctx.fillStyle=g;ctx.fillRect(0,0,W,H);ctx.globalAlpha=.04;ctx.fillStyle="#fff";for(let y=0;y<H;y+=4)ctx.fillRect(0,y,W,1);ctx.globalAlpha=1}
 function drawVignette(){let g=ctx.createRadialGradient(W*.5,H*.5,Math.min(W,H)*.18,W*.5,H*.5,Math.max(W,H)*.75);g.addColorStop(.58,"rgba(0,0,0,0)");g.addColorStop(1,"rgba(0,0,0,.64)");ctx.fillStyle=g;ctx.fillRect(0,0,W,H)}
-function randomLayers(){for(const key of Object.keys(layers)){if(key==="mesh")layers[key]=true;else if(key==="pointer")layers[key]=false;else layers[key]=Math.random()>(key==="membrane"?.72:.34);document.querySelector(`[data-layer="${key}"]`).classList.toggle("active",layers[key])}}
+function syncLayerButtons(){for(const key of Object.keys(layers)){const el=document.querySelector(`[data-layer="${key}"]`);if(el)el.classList.toggle("active",layers[key]);}}function randomLayers(){
+  for(const key of layerOrder){
+    if(key==="mesh")layers[key]=true;
+    else layers[key]=Math.random()>(key==="membrane"?.76:.42);
+  }
+  // Maze walkers and life form a deliberate recurrent pairing in macro evolution.
+  // They can still be independently composed by hand.
+  if(Math.random()<.52){layers.life=true;layers.maze=true}
+  syncLayerButtons();enforceComplexity(false)
+}
 function randomPatches(){for(const key of Object.keys(routes)){routes[key]=bandNames[Math.floor(Math.random()*bandNames.length)];const el=$("route"+key.charAt(0).toUpperCase()+key.slice(1));el.value=routes[key]}}
 function randomPalette(){const keys=Object.keys(palettes);paletteKey=keys[Math.floor(Math.random()*keys.length)];palette=palettes[paletteKey];$("paletteSelect").value=paletteKey;paletteReadout.textContent=palette.name}
-function randomSymmetry(){const values=[2,3,4,5,6,8,10,12];symmetry=values[Math.floor(Math.random()*values.length)];$("symmetry").value=symmetry;reflection=Math.random()>.34;$("reflection").value=String(reflection);resize()}
-function randomMatter(){cellCount=2+Math.floor(Math.random()*9);response=.35+Math.random()*1.45;motionField=.10+Math.random()*1.32;frameReach=.94+Math.random()*.78;layerSpread=.04+Math.random()*.70;$("cellCount").value=cellCount;$("response").value=response;$("motionField").value=motionField;$("frameReach").value=frameReach;$("layerSpread").value=layerSpread}
-function evolve(reason="timer"){let rebuild=false;if(auto.layers)randomLayers();if(auto.patches)randomPatches();if(auto.palette)randomPalette();if(auto.symmetry)randomSymmetry();if(auto.density||auto.response||auto.motion){randomMatter();rebuild=true}if(auto.morph||rebuild)makeGarden(((Math.random()*0xffffffff)>>>0)^(Date.now()>>>0));pulse=1.35;lastAuto=time;show(reason==="song"?"Meaningful spectral shift detected: garden reconfigured.":"Autonomous evolution: garden reconfigured.",1700)}
-function autoStep(metrics){if(!auto.on){autoReadout.textContent="evolution dormant";return}const timerOk=(auto.mode==="timer"||auto.mode==="both")&&time-lastAuto>auto.cadence;const threshold=.018+ctrl("evolution")*.008;const songOk=(auto.mode==="song"||auto.mode==="both")&&time-lastAuto>7&&(metrics.flux>threshold&&metrics.energy>.045||metrics.shift>.040+ctrl("evolution")*.006);if(timerOk)evolve("timer");else if(songOk)evolve("song");autoReadout.textContent=`evolving / ${Math.max(0,auto.cadence-(time-lastAuto)).toFixed(0)}s · Δ${metrics.shift.toFixed(3)}`}
-function frame(now){let dt=clamp((now-last)/16.67,.25,2.2);last=now;time+=dt*.016;const metrics=updateAudio();updateNodes(dt);updateParticles(dt);updateSymbols(dt);lifeClock+=dt*(.16+ctrl("life")*2.5);if(lifeClock>1){lifeClock=0;updateLife()}pulse*=.954;autoStep(metrics);drawBack();ctx.save();ctx.translate(W*.5,H*.5);drawGrid();withSymmetry(drawRings,.02);withSymmetry(drawFilledSplines,.14);withSymmetry(drawMembrane,.21);withSymmetry(drawParticles,.34);withSymmetry(drawTethers,.24);withSymmetry(drawMeshSector,.10);withSymmetry(drawLife,.48);withSymmetry(drawSymbols,.72);drawPointer();ctx.restore();drawEQ();drawVignette();requestAnimationFrame(frame)}
+function randomSymmetry(){const values=[2,3,3,4,4,4,5,5,5,6,6,6,6,8,8,10];symmetry=values[Math.floor(Math.random()*values.length)];$("symmetry").value=symmetry;reflection=Math.random()>.34;$("reflection").value=String(reflection);enforceComplexity(false);resize()}
+function randomMatter(opts={density:true,response:true,motion:true,rotation:true,warble:true}){if(opts.density)cellCount=1+Math.floor(Math.random()*6);if(opts.response)response=.35+Math.random()*1.55;if(opts.motion){motionField=.08+Math.random()*1.24;frameReach=.98+Math.random()*.66;layerSpread=.03+Math.random()*.56}if(opts.rotation&&symmetry<8){sceneRotation=Math.random()*Math.PI*2;rotationSpeed=(Math.random()-.5)*.22}if(opts.warble&&symmetry<8){warble=Math.random()<.16?(.14+Math.random()*.32):0;}applyFoldSafety(false);$("cellCount").value=cellCount;$("response").value=response;$("motionField").value=motionField;$("frameReach").value=frameReach;$("layerSpread").value=layerSpread;$("sceneRotation").value=Math.round(sceneRotation*180/Math.PI);$("rotationSpeed").value=rotationSpeed;$("warble").value=warble}
 
-Object.entries(palettes).forEach(([k,p])=>{let o=document.createElement("option");o.value=k;o.textContent=p.name;$("paletteSelect").appendChild(o)});$("paletteSelect").value=paletteKey;$("paletteSelect").addEventListener("change",e=>{paletteKey=e.target.value;palette=palettes[paletteKey];paletteReadout.textContent=palette.name;pulse=1});[2,3,4,5,6,8,10,12].forEach(v=>{let o=document.createElement("option");o.value=v;o.textContent=v+"-fold";$("symmetry").appendChild(o)});$("symmetry").value=symmetry;$("symmetry").addEventListener("change",e=>{symmetry=Number(e.target.value);resize();});$("reflection").addEventListener("change",e=>reflection=e.target.value==="true");$("hueDrift").addEventListener("input",e=>hueDrift=Number(e.target.value));$("intensity").addEventListener("input",e=>intensity=Number(e.target.value));$("frameReach").addEventListener("input",e=>frameReach=Number(e.target.value));$("layerSpread").addEventListener("input",e=>layerSpread=Number(e.target.value));$("motionField").addEventListener("input",e=>motionField=Number(e.target.value));$("response").addEventListener("input",e=>response=Number(e.target.value));$("cellCount").addEventListener("input",e=>{cellCount=Number(e.target.value);makeGarden(((Math.random()*0xffffffff)>>>0)^(Date.now()>>>0));pulse=1});
-for(const key of Object.keys(layers)){const el=document.querySelector(`[data-layer="${key}"]`);el.addEventListener("click",()=>{layers[key]=!layers[key];el.classList.toggle("active",layers[key]);pulse=.5})}for(const key of Object.keys(routes)){const select=$("route"+key.charAt(0).toUpperCase()+key.slice(1));bandNames.forEach(k=>{let o=document.createElement("option");o.value=k;o.textContent=bandLabels[k];select.appendChild(o)});select.value=routes[key];select.addEventListener("change",()=>{routes[key]=select.value;pulse=.55})}
-$("autoEnable").addEventListener("change",e=>{auto.on=e.target.checked;lastAuto=time;show(auto.on?"Automation armed. Song shift now uses spectral-flux and sustained-timbre change detection.":"Automation disarmed.",2600)});$("autoMode").addEventListener("change",e=>auto.mode=e.target.value);$("cadence").addEventListener("input",e=>auto.cadence=Number(e.target.value));for(const key of ["layers","patches","palette","symmetry","morph","density","response","motion"]){$("auto"+key.charAt(0).toUpperCase()+key.slice(1)).addEventListener("change",e=>auto[key]=e.target.checked)}$("shuffleAll").addEventListener("click",()=>{randomLayers();randomPatches();randomPalette();randomSymmetry();randomMatter();makeGarden(((Math.random()*0xffffffff)>>>0)^(Date.now()>>>0));pulse=1.4;show("Full configuration shuffled.",1500)});$("shuffleLayers").addEventListener("click",()=>{randomLayers();pulse=.8;show("Visual layer configuration shuffled.",1400)});$("shufflePatches").addEventListener("click",()=>{randomPatches();pulse=.8;show("Spectral routing shuffled.",1400)});$("mutate").addEventListener("click",()=>{makeGarden(((Math.random()*0xffffffff)>>>0)^(Date.now()>>>0));pulse=1.4;show("New cell family, splines, relics, and relationships seeded.",1600)});let deckHidden=false;$("hideDeck").addEventListener("click",()=>{deckHidden=!deckHidden;$("deck").classList.toggle("hide",deckHidden);$("hideDeck").textContent=deckHidden?"Show":"Hide"});
+function feedMicroEntropy(value=0){
+  micro.entropy=(Math.imul((micro.entropy^(value>>>0))>>>0,1664525)+1013904223)>>>0;
+  if(!micro.entropy)micro.entropy=0xA341316C;
+}
+function microRand(){
+  let x=(micro.state^micro.entropy^Math.imul(micro.step+1,0x9E3779B9))>>>0;
+  x^=x<<13;x^=x>>>17;x^=x<<5;
+  micro.state=(x>>>0)||0x6D2B79F5;
+  micro.step++;
+  return micro.state/4294967296;
+}
+function microChoice(items){
+  const cooled=items.filter(item=>!micro.recent.includes(item.key));
+  const pool=cooled.length?cooled:items;
+  const total=pool.reduce((sum,item)=>sum+(item.weight||1),0);
+  let pick=microRand()*total;
+  for(const item of pool){pick-=item.weight||1;if(pick<=0)return item}
+  return pool[pool.length-1];
+}
+function setControl(id,value){const el=$(id);if(el)el.value=value}
+function syncMicroReadout(){
+  const el=$("microReadout");if(!el)return;
+  if(!micro.on){el.textContent="Micro-wander dormant";return}
+  const remaining=Math.max(0,micro.cadence-(time-micro.last)).toFixed(1);
+  el.textContent=`Micro drift / ${remaining}s · last: ${micro.lastLabel}`;
+}
+function microNudge(){
+  const folds=[2,3,4,5,6];
+  const actions=[
+    {key:"hue",weight:1.35,label:"hue drift",run(){hueDrift=clamp(hueDrift+(microRand()<.5?-1:1)*(.06+microRand()*.18),0,2);setControl("hueDrift",hueDrift)}},
+    {key:"intensity",weight:1.10,label:"intensity",run(){intensity=clamp(intensity+(microRand()<.5?-1:1)*(.06+microRand()*.16),.35,1.85);setControl("intensity",intensity)}},
+    {key:"reach",weight:1.10,label:"frame reach",run(){frameReach=clamp(frameReach+(microRand()<.5?-1:1)*(.04+microRand()*.13),.86,1.84);setControl("frameReach",frameReach)}},
+    {key:"spread",weight:1.00,label:"layer spread",run(){layerSpread=clamp(layerSpread+(microRand()<.5?-1:1)*(.03+microRand()*.12),0,1.05);setControl("layerSpread",layerSpread)}},
+    {key:"motion",weight:1.28,label:"motion field",run(){motionField=clamp(motionField+(microRand()<.5?-1:1)*(.05+microRand()*.18),.04,1.38);setControl("motionField",motionField)}},
+    {key:"response",weight:1.25,label:"response",run(){response=clamp(response+(microRand()<.5?-1:1)*(.06+microRand()*.18),.30,1.85);setControl("response",response)}},
+    {key:"rotation",weight:.85,label:"scene angle",run(){sceneRotation=(sceneRotation+(microRand()<.5?-1:1)*(.09+microRand()*.35)+Math.PI*2)%(Math.PI*2);setControl("sceneRotation",Math.round(sceneRotation*180/Math.PI))}},
+    {key:"turn",weight:.55,label:"turn rate",run(){if(symmetry>=8)return;rotationSpeed=clamp(rotationSpeed+(microRand()<.5?-1:1)*(.008+microRand()*.028),-.12,.12);setControl("rotationSpeed",rotationSpeed)}},
+    {key:"warble",weight:.18,label:"unified warble",run(){if(symmetry>=6){warble=0;setControl("warble",warble);return}warble=clamp(warble+(microRand()<.5?-1:1)*(.02+microRand()*.055),0,.30);setControl("warble",warble)}},
+    {key:"density",weight:.48,label:"cell density",run(){const next=clamp(cellCount+(microRand()<.5?-1:1),1,6);if(next!==cellCount){cellCount=next;setControl("cellCount",cellCount);makeGarden(((microRand()*0xffffffff)>>>0)^seed)}}},
+    {key:"symmetry",weight:.33,label:"symmetry",run(){const i=Math.max(0,folds.indexOf(symmetry));symmetry=folds[clamp(i+(microRand()<.5?-1:1),0,folds.length-1)];setControl("symmetry",symmetry);applyFoldSafety(false);enforceComplexity(false);resize()}},
+    {key:"reflection",weight:.30,label:"reflection",run(){reflection=!reflection;setControl("reflection",String(reflection))}},
+    {key:"palette",weight:.32,label:"palette",run(){const keys=Object.keys(palettes),i=Math.max(0,keys.indexOf(paletteKey));paletteKey=keys[(i+(microRand()<.5?-1:1)+keys.length)%keys.length];palette=palettes[paletteKey];setControl("paletteSelect",paletteKey);paletteReadout.textContent=palette.name}},
+    {key:"patch",weight:.82,label:"one spectral patch",run(){const routeKeys=Object.keys(routes),key=routeKeys[Math.floor(microRand()*routeKeys.length)],i=Math.max(0,bandNames.indexOf(routes[key]));routes[key]=bandNames[(i+(microRand()<.5?-1:1)+bandNames.length)%bandNames.length];setControl("route"+key.charAt(0).toUpperCase()+key.slice(1),routes[key]);micro.lastLabel=`${key} → ${bandLabels[routes[key]].toLowerCase()}`}},
+    {key:"layer",weight:.52,label:"one layer",run(){const candidates=layerOrder.filter(key=>key!=="mesh"&&!(symmetry>=6&&(key==="splines"||key==="mirror")));const key=candidates[Math.floor(microRand()*candidates.length)];const next=!layers[key];layers[key]=next;if((key==="life"||key==="maze")&&microRand()<.68){layers.life=next;layers.maze=next;micro.lastLabel=`life + maze ${next?"on":"off"}`}else micro.lastLabel=`${key} ${next?"on":"off"}`;syncLayerButtons();enforceComplexity(false)}},
+    {key:"order",weight:.34,label:"layer order",run(){const i=Math.floor(microRand()*(layerOrder.length-1));[layerOrder[i],layerOrder[i+1]]=[layerOrder[i+1],layerOrder[i]];const stack=$("layerStack");for(const key of layerOrder){const el=document.querySelector(`[data-layer="${key}"]`);if(el)stack.appendChild(el)}}},
+    {key:"life",weight:.16,label:"life rule",run(){const keys=Object.keys(lifeRules),i=Math.max(0,keys.indexOf(lifeRule));lifeRule=keys[(i+(microRand()<.5?-1:1)+keys.length)%keys.length];setControl("lifeRule",lifeRule);makeGarden(((microRand()*0xffffffff)>>>0)^seed)}}
+  ];
+  const action=microChoice(actions),before=micro.lastLabel;
+  action.run();
+  if(micro.lastLabel===before)micro.lastLabel=action.label;
+  micro.recent.unshift(action.key);micro.recent=micro.recent.slice(0,6);
+  micro.last=time;pulse=Math.max(pulse,.55);
+  feedMicroEntropy(Math.floor((pointer.x*65535)^(pointer.y*131071)^(time*1000)));
+  applyFoldSafety(false);enforceComplexity(false);syncMicroReadout();
+}
+function shuffleLayerOrder(){for(let i=layerOrder.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[layerOrder[i],layerOrder[j]]=[layerOrder[j],layerOrder[i]]}const stack=$("layerStack");for(const key of layerOrder){const el=document.querySelector(`[data-layer="${key}"]`);if(el)stack.appendChild(el)}enforceComplexity(false)}function randomLifeRule(){const keys=Object.keys(lifeRules);lifeRule=keys[Math.floor(Math.random()*keys.length)];$("lifeRule").value=lifeRule}function evolve(reason="timer"){let rebuild=false;if(auto.layers)randomLayers();if(auto.patches)randomPatches();if(auto.palette)randomPalette();if(auto.symmetry)randomSymmetry();if(auto.order)shuffleLayerOrder();if(auto.density||auto.response||auto.motion||auto.rotation||auto.warble){randomMatter({density:auto.density,response:auto.response,motion:auto.motion,rotation:auto.rotation,warble:auto.warble});rebuild=true}if(auto.lifeRule){randomLifeRule();rebuild=true}if(auto.morph||rebuild)makeGarden(((Math.random()*0xffffffff)>>>0)^(Date.now()>>>0));pulse=1.35;lastAuto=time;show(reason==="song"?"Meaningful spectral shift detected: garden reconfigured.":"Autonomous evolution: garden reconfigured.",1700)}
+function autoStep(metrics){
+  if(auto.on){
+    const timerOk=(auto.mode==="timer"||auto.mode==="both")&&time-lastAuto>auto.cadence;
+    const threshold=.010+ctrl("evolution")*.006;
+    const songOk=(auto.mode==="song"||auto.mode==="both")&&time-lastAuto>6&&((metrics.flux>threshold&&metrics.energy>.030)||(metrics.shift>.022+ctrl("evolution")*.004&&metrics.energy>.024));
+    if(timerOk)evolve("timer");else if(songOk)evolve("song");
+  }
+  // Give a full macro reconfiguration a short head start; micro-wander then develops
+  // it one small parameter at a time instead of fighting it instantly.
+  if(micro.on&&time-micro.last>micro.cadence&&time-lastAuto>1.3)microNudge();
+  const macro=auto.on?`macro / ${Math.max(0,auto.cadence-(time-lastAuto)).toFixed(0)}s`:"macro dormant";
+  const drift=micro.on?`micro / ${Math.max(0,micro.cadence-(time-micro.last)).toFixed(1)}s`:"micro dormant";
+  autoReadout.textContent=`${macro} · ${drift}`;
+  syncMicroReadout();
+}
+const layerRender={mesh:[drawMeshSector,.10],tethers:[drawTethers,.24],membrane:[drawMembrane,.21],splines:[drawFilledSplines,.14],mirror:[drawMirrorSplines,.18],particles:[drawParticles,.34],symbols:[drawSymbols,.72],life:[drawLife,.48],rings:[drawRings,.02],helix:[drawHelixRibbons,.09],branches:[drawForkingGrowth,.31],maze:[drawMazeWalkers,.39],tunnel:[drawDriveTunnel,0,"global"],stripes:[drawPhaseStripes,0,"global"]};
+function frame(now){
+  const rawMs=Math.min(100,now-last);let dt=clamp(rawMs/16.67,.25,2.2);last=now;updatePerformance(rawMs);time+=dt*.016;const metrics=updateAudio();updateNodes(dt);updateParticles(dt);updateSymbols(dt);
+  lifeClock+=dt*(.08+ctrl("life")*1.15);if(lifeClock>1){lifeClock=0;updateLife()}pulse*=.954;autoStep(metrics);drawBack();
+  ctx.save();ctx.translate(W*.5,H*.5);drawGrid();
+  // The visible top of the draggable stack is drawn last: it becomes the foreground layer.
+  for(const key of layerOrder.slice().reverse()){
+    const entry=layerRender[key];
+    if(entry&&layers[key]){
+      try{if(entry[2]==="global")entry[0]();else withSymmetry(entry[0],entry[1]);}
+      catch(err){
+        console.error("Signal Garden layer failure:",key,err);
+        layers[key]=false;
+        const el=document.querySelector(`[data-layer="${key}"]`);
+        if(el)el.classList.remove("active");
+      }
+    }
+  }
+  drawPointer();ctx.restore();drawEQ();drawVignette();requestAnimationFrame(frame);
+}
+
+Object.entries(palettes).forEach(([k,p])=>{let o=document.createElement("option");o.value=k;o.textContent=p.name;$("paletteSelect").appendChild(o)});$("paletteSelect").value=paletteKey;$("paletteSelect").addEventListener("change",e=>{paletteKey=e.target.value;palette=palettes[paletteKey];paletteReadout.textContent=palette.name;pulse=1});
+Object.entries(lifeRules).forEach(([k,r])=>{let o=document.createElement("option");o.value=k;o.textContent=r.name;$("lifeRule").appendChild(o)});$("lifeRule").value=lifeRule;$("lifeRule").addEventListener("change",e=>{lifeRule=e.target.value;makeGarden(((Math.random()*0xffffffff)>>>0)^(Date.now()>>>0));pulse=.9});
+[2,3,4,5,6,8,10,12].forEach(v=>{let o=document.createElement("option");o.value=v;o.textContent=v+"-fold";$("symmetry").appendChild(o)});$("symmetry").value=symmetry;$("symmetry").addEventListener("change",e=>{symmetry=Number(e.target.value);resize();pulse=.7;});$("reflection").addEventListener("change",e=>reflection=e.target.value==="true");$("hueDrift").addEventListener("input",e=>hueDrift=Number(e.target.value));$("intensity").addEventListener("input",e=>intensity=Number(e.target.value));$("frameReach").addEventListener("input",e=>frameReach=Number(e.target.value));$("layerSpread").addEventListener("input",e=>layerSpread=Number(e.target.value));$("motionField").addEventListener("input",e=>motionField=Number(e.target.value));$("sceneRotation").addEventListener("input",e=>sceneRotation=Number(e.target.value)*Math.PI/180);$("rotationSpeed").addEventListener("input",e=>rotationSpeed=Number(e.target.value));$("warble").addEventListener("input",e=>warble=Number(e.target.value));$("response").addEventListener("input",e=>response=Number(e.target.value));$("cellCount").addEventListener("input",e=>{cellCount=Number(e.target.value);makeGarden(((Math.random()*0xffffffff)>>>0));pulse=1});
+for(const key of Object.keys(layers)){const el=document.querySelector(`[data-layer="${key}"]`);if(!el)continue;el.addEventListener("click",()=>{layers[key]=!layers[key];syncLayerButtons();pulse=.5})}
+let dragged=null;const stack=$("layerStack");stack.addEventListener("dragstart",e=>{const el=e.target.closest(".layer");if(!el)return;dragged=el;el.classList.add("dragging");e.dataTransfer.effectAllowed="move"});stack.addEventListener("dragover",e=>{e.preventDefault();const target=e.target.closest(".layer");if(target&&target!==dragged)target.classList.add("dropHint")});stack.addEventListener("dragleave",e=>{const target=e.target.closest(".layer");if(target)target.classList.remove("dropHint")});stack.addEventListener("drop",e=>{e.preventDefault();const target=e.target.closest(".layer");if(dragged&&target&&target!==dragged){const rect=target.getBoundingClientRect();if(e.clientY<rect.top+rect.height/2)stack.insertBefore(dragged,target);else stack.insertBefore(dragged,target.nextSibling)}if(dragged){dragged.classList.remove("dragging");dragged=null}document.querySelectorAll(".layer").forEach(el=>el.classList.remove("dropHint"));layerOrder=[...stack.querySelectorAll(".layer")].map(el=>el.dataset.layer);pulse=.7;show("Layer order updated: top button now draws closest to the viewer.",1500)});stack.addEventListener("dragend",()=>{document.querySelectorAll(".layer").forEach(el=>el.classList.remove("dragging","dropHint"));dragged=null});
+for(const key of Object.keys(routes)){const select=$("route"+key.charAt(0).toUpperCase()+key.slice(1));bandNames.forEach(k=>{let o=document.createElement("option");o.value=k;o.textContent=bandLabels[k];select.appendChild(o)});select.value=routes[key];select.addEventListener("change",()=>{routes[key]=select.value;pulse=.55})}
+$("autoEnable").addEventListener("change",e=>{auto.on=e.target.checked;lastAuto=time;show(auto.on?"Automation armed. Song shifts use spectral-flux and sustained-timbre detection.":"Automation disarmed.",2600)});
+$("microEnable").addEventListener("change",e=>{micro.on=e.target.checked;micro.last=time-micro.cadence*.55;micro.lastLabel=e.target.checked?"path awakened":"paused";syncMicroReadout();});
+$("microCadence").addEventListener("input",e=>{micro.cadence=Number(e.target.value);syncMicroReadout();});
+$("microNudge").addEventListener("click",()=>microNudge());
+$("safeProfile").addEventListener("click",()=>{
+  symmetry=4;reflection=true;cellCount=2;rotationSpeed=0;warble=0;motionField=.62;
+  response=.95;frameReach=1.22;layerSpread=.18;
+  for(const key of Object.keys(layers))layers[key]=["mesh","tethers","particles","symbols","rings","eq"].includes(key);
+  layerOrder=["mesh","tethers","particles","symbols","rings","eq","membrane","splines","mirror","life","helix","branches","maze","tunnel","stripes"];
+  $("symmetry").value=symmetry;$("reflection").value="true";$("cellCount").value=cellCount;
+  $("rotationSpeed").value=rotationSpeed;$("warble").value=warble;$("motionField").value=motionField;
+  $("response").value=response;$("frameReach").value=frameReach;$("layerSpread").value=layerSpread;
+  const stack=$("layerStack");for(const key of layerOrder){const el=document.querySelector(`[data-layer="${key}"]`);if(el)stack.appendChild(el)}
+  syncLayerButtons();makeGarden(((Math.random()*0xffffffff)>>>0)^Date.now());resize();pulse=1.2;
+});$("autoMode").addEventListener("change",e=>auto.mode=e.target.value);$("cadence").addEventListener("input",e=>auto.cadence=Number(e.target.value));for(const key of ["layers","patches","palette","symmetry","morph","density","response","motion","order","rotation","warble","lifeRule"]){$("auto"+key.charAt(0).toUpperCase()+key.slice(1)).addEventListener("change",e=>auto[key]=e.target.checked)}$("shuffleAll").addEventListener("click",()=>{randomLayers();randomPatches();randomPalette();randomSymmetry();randomMatter({density:true,response:true,motion:true,rotation:true,warble:true});shuffleLayerOrder();makeGarden(((Math.random()*0xffffffff)>>>0)^(Date.now()>>>0));pulse=1.4;show("Full configuration shuffled.",1500)});$("shuffleLayers").addEventListener("click",()=>{randomLayers();shuffleLayerOrder();pulse=.8;show("Visual stack and layer activation shuffled.",1400)});$("shufflePatches").addEventListener("click",()=>{randomPatches();pulse=.8;show("Spectral routing shuffled.",1400)});$("mutate").addEventListener("click",()=>{makeGarden(((Math.random()*0xffffffff)>>>0)^(Date.now()>>>0));pulse=1.4;show("New cell family, splines, relics, and relationships seeded.",1600)});let deckHidden=false;$("hideDeck").addEventListener("click",()=>{deckHidden=!deckHidden;$("deck").classList.toggle("hide",deckHidden);$("hideDeck").textContent=deckHidden?"Show":"Hide"});
 $("tabAudio").addEventListener("click",listenTab);$("micAudio").addEventListener("click",listenMic);$("fileAudio").addEventListener("click",()=>$("audioFile").click());$("audioFile").addEventListener("change",e=>{if(e.target.files?.[0])listenFile(e.target.files[0]);e.target.value=""});$("stopAudio").addEventListener("click",stopAudio);
+$("flagChug").addEventListener("click",()=>recordDiagnostic("chug"));$("flagBroken").addEventListener("click",()=>recordDiagnostic("broken"));$("flagBeautiful").addEventListener("click",()=>recordDiagnostic("beautiful"));$("exportReport").addEventListener("click",()=>exportDiagnostics(false));$("exportAnnotated").addEventListener("click",()=>exportDiagnostics(true));$("clearReport").addEventListener("click",()=>{diagnosticLog=[];saveDiagnostics();updateDiagnosticCount();show("Stored profile notes cleared.",1400)});
 function pos(e){const r=canvas.getBoundingClientRect();return{x:clamp((e.clientX-r.left)/r.width,0,1),y:clamp((e.clientY-r.top)/r.height,0,1)}}canvas.addEventListener("pointermove",e=>{const p=pos(e);pointer.x=p.x;pointer.y=p.y;pointer.active=true});canvas.addEventListener("pointerdown",e=>{canvas.setPointerCapture(e.pointerId);const p=pos(e);pointer.x=p.x;pointer.y=p.y;pointer.down=true;pointer.active=true;pulse=.34});function up(e){pointer.down=false;try{canvas.releasePointerCapture(e.pointerId)}catch(_){}}canvas.addEventListener("pointerup",up);canvas.addEventListener("pointercancel",up);canvas.addEventListener("pointerleave",()=>{if(!pointer.down)pointer.active=false});window.addEventListener("keydown",e=>{if(e.key.toLowerCase()==="m")$("mutate").click();if(e.key===" "){pulse=1.7;e.preventDefault()}});
-resize();makeGarden(seed);requestAnimationFrame(frame);
+document.addEventListener("pointerdown",e=>{feedMicroEntropy(((e.clientX||0)*73856093)^((e.clientY||0)*19349663)^Date.now())},{passive:true});
+document.addEventListener("change",e=>{const value=typeof e.target?.value==="string"?e.target.value.length*2654435761:0;feedMicroEntropy(value^Date.now())});
+resize();makeGarden(seed);enforceComplexity(false);updateDiagnosticCount();syncMicroReadout();requestAnimationFrame(frame);
 })();
 </script>
 </body>
